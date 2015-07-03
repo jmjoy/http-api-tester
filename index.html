@@ -78,6 +78,16 @@
                         </div>                        
                         <button type="submit" class="btn btn-default">测试HTTP接口</button>
                         <button type="button" class="btn btn-default" id="addArgBtn">添加参数</button>
+                        <hr />
+                        <div class="form-group">
+                            <label for="api_sign_key">密钥名称：</label>
+                            <input type="text" name="api_sign_key" id="api_sign_key" value="api_sign" class="form-control">
+                        </div>
+                        <div class="form-group" style="margin-left: 1em; margin-right: 1em;">
+                            <label for="api_secret">密码：</label>
+                            <input type="text" name="api_secret" id="api_secret" value="" class="form-control">
+                        </div>
+                        <b>接口测试工具自动生成密钥</b>
                     </form>
                 </div>
                 <div class="panel-body">
@@ -339,9 +349,11 @@ function removeArg(btn) {
 
 function onSubmit() {
     var data = {
-        "url":      $("input[name=url]").val(),
+        "url":      $.trim($("input[name=url]").val()),
         "n":		parseInt($("#boom_n").val()),
         "c":		parseInt($("#boom_c").val()),
+        "key":      $.trim($("#api_sign_key").val()),
+        "secret":   $.trim($("#api_secret").val()),
         "args":     []
     };
 
