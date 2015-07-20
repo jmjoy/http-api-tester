@@ -146,6 +146,9 @@
 					alert("JSON数据格式不正确:\n" + e.message);
 					$(this.options.dom).html("");
 					this.isFormated = false;
+
+                    var newWindowObi=window.open("出错信息");
+                    newWindowObi.document.write(json);
 				}
 			},
 			bindEvent: function () {
