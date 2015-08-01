@@ -1,0 +1,25 @@
+{
+    "select": "0000000000000000000",
+    "bookmarks": {
+        "0000000000000000000": {
+            "name": "默认配置",
+            "method": "GET",
+            "url": "",
+            "args": [
+                
+            ],
+            "bm": {
+                "switch": false,
+                "n": 100,
+                "c": 10
+            },
+            "plugin": {
+                "name": "MD5签名认证",
+                "data": {
+                    "keyname": "api_sign",
+                    "password": ""
+                }
+            }
+        }
+    }
+}

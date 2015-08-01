@@ -7,7 +7,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -40,18 +39,10 @@ func route() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	t, err := template.New("index.html").ParseFiles("view/index.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	t.Execute(w, nil)
-}
-
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	f, err := os.Open("favicon.ico")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer f.Close()
 

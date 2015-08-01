@@ -2,10 +2,41 @@
 //newWindowObi.document.write(json);
 
 $(function() {
+    // style
     $('.switch[type="checkbox"]').bootstrapSwitch();
     $('.selectpicker').selectpicker();
+
+    // btnclick
+    $("#args_add_btn").click(argsAdd);
+
+    // render data
+    var data = returnConfigData();
+    renderBookmarkOptions(data);
 });
 
+
+function renderBookmarkOptions(data) {
+    var tpl = $("#bookmark_option_tpl").html();
+    var html = juicer(tpl, data);
+    $("#bookmark").html(html);
+    $('#bookmark').selectpicker("refresh");
+}
+
+function returnConfigData() {
+    var text = $("#config_json").html();
+    var json = $.parseJSON(text);
+    return json;
+}
+
+function argsAdd() {
+    var tpl = $("#args_tpl").html();
+    $("#args_body").append(tpl);
+    $('.switch[type="checkbox"]').bootstrapSwitch();
+}
+
+function argsRemove(btn) {
+    $(btn).parent().parent().remove();
+}
 
 var g_num = 0;
 var submit_url = '/submit';
@@ -38,9 +69,6 @@ $(function() {
 
 });
 
-function removeArg(btn) {
-    $(btn).parent().parent().remove();
-}
 
 function onSubmit() {
     var data = {

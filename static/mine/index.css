@@ -57,5 +57,18 @@ div.content-right {
 }
 
 div.panel {
-    margin: 1px auto;
+    margin: 3px auto;
+}
+
+td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.form-inline .form-group {
+    margin-right: 5px;
+}
+
+#bm_n, #bm_c {
+    width: 8em;
 }
