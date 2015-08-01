@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
@@ -26,20 +27,35 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		f, err := os.Open("index.html")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer f.Close()
-
-		io.Copy(w, f)
-	})
-
-	http.HandleFunc("/submit", submitHandler)
+	route()
 
 	log.Printf("测试接口服务器在跑了，请访问 http://localhost:%d\n", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+}
+
+func route() {
+	http.HandleFunc("/", handleIndex)
+	http.HandleFunc("/favicon.ico", handleFavicon)
+	http.HandleFunc("/submit", submitHandler)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+}
+
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	t, err := template.New("index.html").ParseFiles("view/index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	t.Execute(w, nil)
+}
+
+func handleFavicon(w http.ResponseWriter, r *http.Request) {
+	f, err := os.Open("favicon.ico")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	io.Copy(w, f)
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {
@@ -244,4 +260,4 @@ type Resp struct {
 
 var port int
 
-const VERSION = "0.2"
+const VERSION = "0.3"

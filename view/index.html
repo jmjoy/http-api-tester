@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>接口测试工具</title>
+
+<link rel="stylesheet" href="/static/bootstrap-3.3.5/css/bootstrap.min.css">
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="stylesheet" href="/static/mine/index.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="/static/bootstrap-switch/bootstrap-switch.min.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="/static/bootstrap-select/css/bootstrap-select.min.css" type="text/css" charset="utf-8">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">接口测试工具</a>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">当前书签：默认配置</a></li>
+
+                <li><button type="button" class="btn btn-info navbar-btn"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></li>
+
+                <!--<li class="dropdown">-->
+                    <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-->
+                        <!--配置列表 <span class="caret"></span>-->
+                    <!--</a>-->
+                    <!--<ul class="dropdown-menu">-->
+                        <!--<li><a href="#">Action</a></li>-->
+                        <!--<li><a href="#">Another action</a></li>-->
+                        <!--<li><a href="#">Something else here</a></li>-->
+                        <!--<li><a href="#">Separated link</a></li>-->
+                    <!--</ul>-->
+                <!--</li>-->
+
+                <li>
+                    <select class="selectpicker navbar-btn">
+                        <option>Mustard</option>
+                        <option>Ketchup</option>
+                        <option>Relish</option>
+                    </select>
+                </li>
+
+                <li><button type="button" class="btn btn-warning navbar-btn"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></li>
+                <li><button type="button" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="container-fluid content">
+        <div class="col-md-6 content-left">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>请求方式：</label>
+                            <input type="checkbox" class="switch" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="mini" checked="checked" />
+                        </div>
+
+                        <div class="form-group" style="margin-left: 1em; margin-right: 1em;">
+                            <label for="url">URL：</label>
+                            <input type="text" name="url" id="url" class="form-control" placeholder="http://" style="width: 20em;" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <form action="#" class="form-inline" onsubmit="return onSubmit();">
+                        <div class="form-group" style="margin-left: 1em; margin-right: 1em;">
+                            <label>压测：</label>
+                            <label for="boom_n">次数</label>
+                            <input type="number" name="boom_n" id="boom_n" class="form-control" value="100" style="width: 5em;">
+                            <label for="boom_c">并发数</label>
+                            <input type="number" name="boom_c" id="boom_c" class="form-control" value="10"  style="width: 5em;">
+                        </div>                        
+                        <button type="submit" class="btn btn-default">测试HTTP接口</button>
+                        <button type="button" class="btn btn-default" id="addArgBtn">添加参数</button>
+                        <hr />
+                        <div class="form-group">
+                            <label for="api_sign_key">密钥名称：</label>
+                            <input type="text" name="api_sign_key" id="api_sign_key" value="api_sign" class="form-control">
+                        </div>
+                        <div class="form-group" style="margin-left: 1em; margin-right: 1em;">
+                            <label for="api_secret">密码：</label>
+                            <input type="text" name="api_secret" id="api_secret" value="" class="form-control">
+                        </div>
+                        <b>接口测试工具自动生成密钥</b>
+                    </form>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered" id="table_args">
+                    </table>
+                </div>
+                <div id="resultPanel" class="panel-footer">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 content-right">
+
+        </div>
+    </div>
+
+    <script src="/static/jquery/jquery-1.11.3.min.js"></script>
+    <script src="/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/juicer/juicer.js"></script>
+    <script src="/static/json-formater/json-formater.js"></script>
+    <script src="/static/bootstrap-switch/bootstrap-switch.min.js"></script>
+    <script src="/static/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="/static/mine/index.js"></script>
+
+</body>
+
+</html>
