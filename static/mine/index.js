@@ -12,13 +12,22 @@ $(function() {
     // render data
     var data = returnConfigData();
     renderBookmarkOptions(data);
+    renderPluginOptions(data);
 });
 
+function renderPluginOptions(data) {
+    var tpl = $("#plugin_option_tpl").html();
+    var html = juicer(tpl, data);
+    $("#plugin").html(html);
+    $("#plugin").selectpicker('val', data.bookmarks[data.selected].plugin.key);
+    $('#plugin').selectpicker("refresh");
+}
 
 function renderBookmarkOptions(data) {
     var tpl = $("#bookmark_option_tpl").html();
     var html = juicer(tpl, data);
     $("#bookmark").html(html);
+    $("#bookmark").selectpicker('val', data.selected);
     $('#bookmark').selectpicker("refresh");
 }
 

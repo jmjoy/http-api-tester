@@ -35,8 +35,7 @@
                 <li><a href="#">当前书签：</a></li>
 
                 <li>
-                    <select class="selectpicker navbar-btn" id="bookmark">
-                    </select>
+                    <select class="selectpicker navbar-btn" id="bookmark"></select>
                 </li>
 
                 <li><button type="button" class="btn btn-success navbar-btn"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 使用</button></li>
@@ -104,11 +103,7 @@
                     <form class="form-inline">
                         <div class="form-group">
                             <label>插件：</label>
-                            <select class="selectpicker">
-                                <option>不使用</option>
-                                <option>Ketchup</option>
-                                <option>Relish</option>
-                            </select>
+                            <select class="selectpicker" id="plugin"></select>
                             <button type="button" class="btn btn-default">使用</button>
                         </div>
                     </form>
@@ -151,6 +146,12 @@
 
     <script id="bookmark_option_tpl" type="text/template">
         {@each bookmarks as it,index}
+        <option value="${index}">${it.name}</option>
+        {@/each}
+    </script>
+
+    <script id="plugin_option_tpl" type="text/template">
+        {@each plugins as it,index}
         <option value="${index}">${it.name}</option>
         {@/each}
     </script>

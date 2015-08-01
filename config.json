@@ -1,5 +1,5 @@
 {
-    "select": "0000000000000000000",
+    "selected": "0000000000000000000",
     "bookmarks": {
         "0000000000000000000": {
             "name": "默认配置",
@@ -14,12 +14,21 @@
                 "c": 10
             },
             "plugin": {
-                "name": "MD5签名认证",
+                "key": "md5signature",
                 "data": {
                     "keyname": "api_sign",
                     "password": ""
                 }
             }
+        }
+    },
+    "plugins": {
+        "notuse": {
+            "name": "不使用"
+        },
+        "md5signature": {
+            "name": "MD5签名认证",
+            "fields": ["keyname", "password"]
         }
     }
 }
