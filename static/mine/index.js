@@ -1,19 +1,57 @@
 //var newWindowObi=window.open("出错信息");
 //newWindowObi.document.write(json);
 
+var gData = null;
+var gOptionTpl = null;
+
 $(function() {
     // style
     $('.switch[type="checkbox"]').bootstrapSwitch();
     $('.selectpicker').selectpicker();
 
     // btnclick
+    gOptionTpl = returnArgOptionTpl();
     $("#args_add_btn").click(argsAdd);
 
     // render data
-    var data = returnConfigData();
-    renderBookmarkOptions(data);
-    renderPluginOptions(data);
+    gData = returnConfigData();
+    renderBookmarkOptions(gData);
+    renderPluginOptions(gData);
+
+    var bookmark = gData.bookmarks[gData.selected];
+    renderContent(bookmark);
+
+    var plugin = gData.plugins[bookmark.plugin.key];
+    renderPluginPanel(plugin);
+    renderPlugin(bookmark, plugin);
 });
+
+function renderPlugin(bookmark, plugin) {
+    for (var i in plugin.fields) {
+        $("#plugin_"+i).val(bookmark.plugin.data[i]);
+    }
+}
+
+function renderPluginPanel(plugin) {
+    var tpl = $("#plugin_panel_tpl").html();
+    var html = juicer(tpl, plugin);
+    $("#plugin_panel").html(html);
+}
+
+function renderArgsOption(bookmark) {
+    var tpl = $("#args_tpl").val();
+    var html = juicer(tpl, bookmark);
+    $("#args_body").html(html);
+}
+
+function renderContent(bookmark) {
+    $('#method').bootstrapSwitch('state', bookmark.method=="GET");
+    $('#url').val(bookmark.url);
+
+    $('#bm_switch').bootstrapSwitch('state', bookmark.bm.switch);
+    $('#bm_n').val(bookmark.bm.n);
+    $('#bm_c').val(bookmark.bm.c);
+}
 
 function renderPluginOptions(data) {
     var tpl = $("#plugin_option_tpl").html();
@@ -38,13 +76,22 @@ function returnConfigData() {
 }
 
 function argsAdd() {
-    var tpl = $("#args_tpl").html();
-    $("#args_body").append(tpl);
+    $("#args_body").append(gOptionTpl);
     $('.switch[type="checkbox"]').bootstrapSwitch();
 }
 
 function argsRemove(btn) {
     $(btn).parent().parent().remove();
+}
+
+function returnArgOptionTpl() {
+    var tpl = $("#args_tpl").html();
+    var empty = {"args":[{
+        "key":    "",
+        "value":  "",
+        "method": "GET",
+    }]};
+    return juicer(tpl, empty);
 }
 
 var g_num = 0;

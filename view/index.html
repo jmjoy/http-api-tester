@@ -55,7 +55,7 @@
                     <form class="form-inline">
                         <div class="form-group">
                             <label>请求方式：</label>
-                            <input type="checkbox" class="switch" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="mini" checked="checked" />
+                            <input type="checkbox" class="switch" id="method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="mini" />
                         </div>
 
                         <div class="form-group">
@@ -84,7 +84,7 @@
                     <form class="form-inline">
                         <div class="form-group">
                             <label>压测：</label>
-                            <input type="checkbox" class="switch" data-size="mini" checked="checked" />
+                            <input type="checkbox" class="switch" id="bm_switch" data-size="mini" checked="checked" />
                         </div>                        
                         <div class="form-group">
                             <label for="boom_n">次数：</label>
@@ -108,15 +108,7 @@
                         </div>
                     </form>
                     <hr />
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <label for="api_sign_key">密钥名称：</label>
-                            <input type="text" name="api_sign_key" id="api_sign_key" value="api_sign" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="api_secret">密码：</label>
-                            <input type="text" name="api_secret" id="api_secret" value="" class="form-control">
-                        </div>
+                    <form id="plugin_panel" class="form-inline">
                     </form>
                 </div>
             </div>
@@ -128,20 +120,22 @@
     </div>
 
     <script id="args_tpl" type="text/template">
+        {@each args as it,index}
         <tr>
             <td>
-                <input type="text" class="form-control" />
+                <input type="text" class="form-control" value="${it.key}" />
             </td>
             <td>
-                <input type="text" class="form-control" />
+                <input type="text" class="form-control" value="${it.value}" />
             </td>
             <td>
-                <input type="checkbox" class="switch" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" checked="checked" />
+                <input type="checkbox" class="switch" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" {@if it.method=="GET"}checked="checked"{@/if} />
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-block btn-danger" onclick="argsRemove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
             </td>
         </tr>
+        {@/each}
     </script>
 
     <script id="bookmark_option_tpl" type="text/template">
@@ -153,6 +147,15 @@
     <script id="plugin_option_tpl" type="text/template">
         {@each plugins as it,index}
         <option value="${index}">${it.name}</option>
+        {@/each}
+    </script>
+
+    <script id="plugin_panel_tpl" type="text/template">
+        {@each fields as it,index}
+         <div class="form-group">
+            <label for="plugin_${index}">${it}：</label>
+            <input type="text" name="plugin_${index}" id="plugin_${index}" class="form-control">
+        </div>
         {@/each}
     </script>
 

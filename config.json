@@ -24,11 +24,15 @@
     },
     "plugins": {
         "notuse": {
-            "name": "不使用"
+            "name": "不使用",
+            "fields": []
         },
         "md5signature": {
             "name": "MD5签名认证",
-            "fields": ["keyname", "password"]
+            "fields": {
+                "keyname": "密钥名称",
+                "password": "密码"
+            }
         }
     }
 }
