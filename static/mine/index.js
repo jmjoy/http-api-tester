@@ -12,6 +12,9 @@ $(function() {
     // btnclick
     gOptionTpl = returnArgOptionTpl();
     $("#args_add_btn").click(argsAdd);
+    $("#bookmark_add_btn").click(bookmarkAdd);
+    $("#bookmark_edit_btn").click(bookmarkEdit);
+    $("#bookmark_drop_btn").click(bookmarkDrop);
 
     // render data
     gData = returnConfigData();
@@ -73,6 +76,23 @@ function returnConfigData() {
     var text = $("#config_json").html();
     var json = $.parseJSON(text);
     return json;
+}
+
+function bookmarkEdit() {
+    $("#confirm_dialog_title").html("编辑书签");
+    $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
+    $("#confirm_dialog").modal("show");
+}
+
+function bookmarkDrop() {
+    $("#confirm_dialog_title").html("删除书签");
+    $("#confirm_dialog_text").html("您确定删除选定书签吗？");
+    $("#confirm_dialog").modal("show");
+}
+
+function bookmarkAdd() {
+    $("#bookmark_add_input").val("");
+    $("#add_dialog").modal("show");
 }
 
 function argsAdd() {
