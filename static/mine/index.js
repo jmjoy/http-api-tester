@@ -114,6 +114,35 @@ function returnArgOptionTpl() {
     return juicer(tpl, empty);
 }
 
+function getRequestData() {
+    var data ={};
+
+    data.method = $("#method").bootstrapSwitch("state");
+    data.url = $.trim($("#url").val());
+    data.bm_switch = $("#bm_switch").bootstrapSwitch("state");
+    data.bm_n =  $.trim($("#bm_n").val());
+    data.bm_c =  $.trim($("#bm_c").val());
+
+    data.args = [];
+    $("#args_body tr").each(function() {
+        data.args.append({
+            "key":     $.trim($(this).find(".arg-key").val()),
+            "value":   $.trim($(this).find(".arg-value").val()),
+            "method":  $(this).find(".arg-method").bootstrapSwitch("state")
+        });
+    });
+
+    var bookmark = gData.bookmarks[gData.selected];
+    data.plugin = {};
+    data.plugin.data = {};
+    data.plugin.key = bookmark.plugin.key;
+    for (var i in bookmark.plugin.data) {
+        data.plugin.data["plugin_"+i] = bookmark.plugin.data[i];
+    }
+
+    return data;
+}
+
 var g_num = 0;
 var submit_url = '/submit';
 

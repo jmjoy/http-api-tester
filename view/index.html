@@ -163,13 +163,13 @@
         {@each args as it,index}
         <tr>
             <td>
-                <input type="text" class="form-control" value="${it.key}" />
+                <input type="text" class="form-control arg-key" value="${it.key}" />
             </td>
             <td>
-                <input type="text" class="form-control" value="${it.value}" />
+                <input type="text" class="form-control arg-value" value="${it.value}" />
             </td>
             <td>
-                <input type="checkbox" class="switch" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" {@if it.method=="GET"}checked="checked"{@/if} />
+                <input type="checkbox" class="switch arg-method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" {@if it.method=="GET"}checked="checked"{@/if} />
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-block btn-danger" onclick="argsRemove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
