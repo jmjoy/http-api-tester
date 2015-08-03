@@ -15,6 +15,7 @@ $(function() {
     $("#bookmark_add_btn").click(bookmarkAdd);
     $("#bookmark_edit_btn").click(bookmarkEdit);
     $("#bookmark_drop_btn").click(bookmarkDrop);
+    $("#bookamrkAddBtn").click()
 
     // render data
     gData = returnConfigData();
@@ -117,7 +118,7 @@ function returnArgOptionTpl() {
 function getRequestData() {
     var data ={};
 
-    data.method = $("#method").bootstrapSwitch("state");
+    data.method = $("#method").bootstrapSwitch("state") ? "GET" : "POST";
     data.url = $.trim($("#url").val());
     data.bm_switch = $("#bm_switch").bootstrapSwitch("state");
     data.bm_n =  $.trim($("#bm_n").val());
@@ -125,10 +126,14 @@ function getRequestData() {
 
     data.args = [];
     $("#args_body tr").each(function() {
-        data.args.append({
-            "key":     $.trim($(this).find(".arg-key").val()),
+        var key = $.trim($(this).find(".arg-key").val());
+        if (key == "") {
+            return false;
+        }
+        data.args.push({
+            "key":     key,
             "value":   $.trim($(this).find(".arg-value").val()),
-            "method":  $(this).find(".arg-method").bootstrapSwitch("state")
+            "method":  $(this).find(".arg-method").bootstrapSwitch("state") ? "GET" : "POST"
         });
     });
 

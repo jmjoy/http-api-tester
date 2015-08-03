@@ -8,6 +8,13 @@ import (
 	"text/template"
 )
 
+type jsonConfig struct {
+	Selected           string
+	Bookmarks, Plugins map[string]interface{}
+}
+
+var gJsonConfig *jsonConfig
+
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	t, err := template.New("index.html").ParseFiles("view/index.html")
 	if err != nil {
@@ -20,6 +27,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 
 func getConfigJson() *bytes.Buffer {
 	src, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal(src, jsonConfig)
 	if err != nil {
 		panic(err)
 	}

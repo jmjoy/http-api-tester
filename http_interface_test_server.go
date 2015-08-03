@@ -35,6 +35,7 @@ func main() {
 func route() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
+	http.HandleFunc("/bookmark", new(BookmarkController))
 	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 }
