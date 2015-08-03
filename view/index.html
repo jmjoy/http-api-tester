@@ -130,7 +130,7 @@
                 <div class="modal-body">
                     <div id="bookmark_add_err" class="alert alert-danger hidden" role="alert"></div>
                     <label for="bookmark_add_input">书签名称：</label>
-                    <input type="text" id="bookmark_add_input" class="form-control" placeholder="中英文数字1~20字符" />
+                    <input type="text" id="bookmark_add_input" class="form-control" placeholder="1~20位非空字符" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -200,6 +200,13 @@
     </script>
 
     <script id="config_json" type="text/template">{{.Config}}</script>
+
+    <!-- 全局变量 -->
+    <script type="text/javascript">
+        var g = {
+            "bookmarkUrl": "/bookmark"
+        };
+    </script>
 
     <script src="/static/jquery/jquery-1.11.3.min.js"></script>
     <script src="/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>

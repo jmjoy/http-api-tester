@@ -6,30 +6,13 @@ import (
 )
 
 type Controller struct {
-	W http.ResponseWriter
-	R *http.Request
+	w http.ResponseWriter
+	r *http.Request
 }
 
-func (this *Controller) Do(w http.ResponseWriter, r *http.Request) {
-	this.W = w
-	this.R = r
-
-	switch this.R.Method {
-	case "GET":
-		this.Get()
-
-	case "POST":
-		this.Post()
-
-	case "PUT":
-		this.Put()
-
-	case "DELETE":
-		this.Delete()
-
-	default:
-		this.W.Write("I don't know this method, get out please!")
-	}
+func (this *Controller) SetWR(w http.ResponseWriter, r *http.Request) {
+	this.w = w
+	this.r = r
 }
 
 func (this *Controller) RenderJson(code int, msg string, data interface{}) {
@@ -38,7 +21,7 @@ func (this *Controller) RenderJson(code int, msg string, data interface{}) {
 		panic(err)
 	}
 
-	w.Write(buf)
+	this.w.Write(buf)
 }
 
 func (this *Controller) Get() {

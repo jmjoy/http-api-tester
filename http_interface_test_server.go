@@ -35,9 +35,9 @@ func main() {
 func route() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
-	http.HandleFunc("/bookmark", new(BookmarkController))
 	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	HandleRestful("/bookmark", NewBookmarkController())
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +48,37 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 
 	io.Copy(w, f)
+}
+
+type Restful interface {
+	SetWR(http.ResponseWriter, *http.Request)
+	Get()
+	Post()
+	Put()
+	Delete()
+}
+
+func HandleRestful(pattern string, rf Restful) {
+	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		rf.SetWR(w, r)
+
+		switch r.Method {
+		case "GET":
+			rf.Get()
+
+		case "POST":
+			rf.Post()
+
+		case "PUT":
+			rf.Put()
+
+		case "DELETE":
+			rf.Delete()
+
+		default:
+			w.Write([]byte("I don't know this method, get out please!"))
+		}
+	})
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {

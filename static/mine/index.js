@@ -15,7 +15,8 @@ $(function() {
     $("#bookmark_add_btn").click(bookmarkAdd);
     $("#bookmark_edit_btn").click(bookmarkEdit);
     $("#bookmark_drop_btn").click(bookmarkDrop);
-    $("#bookamrkAddBtn").click()
+    $("#bookamrkAddBtn").click(handleBookamrkAdd)
+    $("#bookmark_add_input").focus(hiddenErrAlert);
 
     // render data
     gData = returnConfigData();
@@ -29,6 +30,51 @@ $(function() {
     renderPluginPanel(plugin);
     renderPlugin(bookmark, plugin);
 });
+
+function handleBookamrkAdd() {
+    var name = $.trim($("#bookmark_add_input").val());
+
+    // 校验
+    var reg = /^\S{1,20}$/;
+    if (!reg.test(name)) {
+        $("#bookmark_add_err").html("书签名称必须为1~20位非空字符");
+        $("#bookmark_add_err").removeClass("hidden");
+        return false;
+    }
+
+    // 安全禁用
+    $(this).button('loading');
+    // 联网
+    var data = {
+        "name":  name,
+        "data":  getRequestData(),
+    };
+    $.ajax({
+        "url":  g.bookmarkUrl,
+        "type":  "POST",
+        "data":  JSON.stringify(data),
+        "contentType":  "application/json",
+        "success":  function(data){
+            // 恢复按钮状态
+            $(this).button('reset');
+
+            if (data.status != 200) {
+                $("#bookmark_add_err").html(data.msg);
+                $("#bookmark_add_err").removeClass("hidden");
+                return false;
+            }
+
+            // TODO add bookmark
+        },
+       "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+           alert(textStatus);
+        }
+    });
+}
+
+function hiddenErrAlert() {
+    $("#bookmark_add_err").addClass("hidden");
+}
 
 function renderPlugin(bookmark, plugin) {
     for (var i in plugin.fields) {

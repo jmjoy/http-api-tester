@@ -13,7 +13,7 @@ type jsonConfig struct {
 	Bookmarks, Plugins map[string]interface{}
 }
 
-var gJsonConfig *jsonConfig
+var gJsonConfig = new(jsonConfig)
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	t, err := template.New("index.html").ParseFiles("view/index.html")
@@ -31,7 +31,7 @@ func getConfigJson() *bytes.Buffer {
 		panic(err)
 	}
 
-	err = json.Unmarshal(src, jsonConfig)
+	err = json.Unmarshal(src, gJsonConfig)
 	if err != nil {
 		panic(err)
 	}
