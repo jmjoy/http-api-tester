@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"text/template"
 )
 
 type jsonConfig struct {
 	Selected           string
-	Bookmarks, Plugins map[string]interface{}
+	Bookmarks, Plugins map[string]map[string]interface{}
 }
 
 var gJsonConfig = new(jsonConfig)
@@ -43,4 +44,30 @@ func getConfigJson() *bytes.Buffer {
 	}
 
 	return dst
+}
+
+func saveConfigJson() error {
+	buf, err := json.Marshal(gJsonConfig)
+	if err != nil {
+		return err
+	}
+
+	buffer := new(bytes.Buffer)
+	err = json.Indent(buffer, buf, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	fw, err := os.Open("config.json")
+	if err != nil {
+		return err
+	}
+	defer fw.Close()
+
+	_, err = buffer.WriteTo(fw)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

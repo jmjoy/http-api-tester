@@ -16,7 +16,12 @@ func (this *Controller) SetWR(w http.ResponseWriter, r *http.Request) {
 }
 
 func (this *Controller) RenderJson(code int, msg string, data interface{}) {
-	buf, err := json.Marshal(data)
+	out := map[string]interface{}{
+		"status": code,
+		"msg":    msg,
+		"data":   data,
+	}
+	buf, err := json.Marshal(out)
 	if err != nil {
 		panic(err)
 	}
