@@ -33,7 +33,8 @@ func (this *BookmarkController) Post() {
 	}
 
 	// 检查名字是否重复
-	for _, row := range gJsonConfig.Bookmarks {
+	jsonConfig := GetConfigJson()
+	for _, row := range jsonConfig.Bookmarks {
 		if row.Name == input.Name {
 			this.RenderJson(40010, "书签名已经使用过了", nil)
 			return
@@ -42,13 +43,13 @@ func (this *BookmarkController) Post() {
 
 	// 添加书签
 	rand := strconv.FormatInt(time.Now().UnixNano(), 10)
-	gJsonConfig.Bookmarks[rand] = *input
+	jsonConfig.Bookmarks[rand] = *input
 
 	// 持久化到文件
-	err = saveConfigJson()
+	err = SaveConfigJson(jsonConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	this.RenderJson(400, "", nil)
+	this.RenderJson(400, "ok", nil)
 }

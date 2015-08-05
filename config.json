@@ -1,38 +1,54 @@
 {
-    "selected": "0000000000000000000",
-    "bookmarks": {
+    "Selected": "0000000000000000000",
+    "Bookmarks": {
         "0000000000000000000": {
-            "name": "默认配置",
-            "method": "GET",
-            "url": "",
-            "args": [
-                
-            ],
-            "bm": {
-                "switch": false,
-                "n": 100,
-                "c": 10
+            "Name": "默认配置",
+            "Method": "GET",
+            "Url": "",
+            "Args": [],
+            "Bm": {
+                "Switch": false,
+                "N": 100,
+                "C": 10
             },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
+            "Plugin": {
+                "Key": "md5signature",
+                "Data": {
                     "keyname": "api_sign",
                     "password": ""
                 }
             }
+        },
+        "1438791283735687287": {
+            "Name": "a",
+            "Method": "GET",
+            "Url": "",
+            "Args": [],
+            "Bm": {
+                "Switch": false,
+                "N": 100,
+                "C": 10
+            },
+            "Plugin": {
+                "Key": "md5signature",
+                "Data": {
+                    "plugin_keyname": "api_sign",
+                    "plugin_password": ""
+                }
+            }
         }
     },
-    "plugins": {
-        "notuse": {
-            "name": "不使用",
-            "fields": {}
-        },
+    "Plugins": {
         "md5signature": {
-            "name": "MD5签名认证",
-            "fields": {
+            "Name": "MD5签名认证",
+            "Fields": {
                 "keyname": "密钥名称",
                 "password": "密码"
             }
+        },
+        "notuse": {
+            "Name": "不使用",
+            "Fields": {}
         }
     }
 }

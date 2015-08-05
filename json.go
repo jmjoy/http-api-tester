@@ -93,7 +93,7 @@ func SaveConfigJson(jsonConfig *JsonConfig) error {
 	gConfigJsonMutex.Lock()
 	defer gConfigJsonMutex.Unlock()
 
-	fw, err := os.Open(gConfigPath)
+	fw, err := os.OpenFile(gConfigPath, os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

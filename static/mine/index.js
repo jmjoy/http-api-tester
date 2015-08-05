@@ -76,7 +76,9 @@ function handleBookamrkAdd() {
             // TODO add bookmark
         },
        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-           alert(textStatus);
+            $(btn).button('reset');
+            $("#bookmark_add_err").html(textStatus);
+            $("#bookmark_add_err").removeClass("hidden");
         }
     });
 }
