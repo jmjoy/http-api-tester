@@ -25,7 +25,7 @@
     "plugins": {
         "notuse": {
             "name": "不使用",
-            "fields": []
+            "fields": {}
         },
         "md5signature": {
             "name": "MD5签名认证",

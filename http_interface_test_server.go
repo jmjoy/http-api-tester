@@ -17,6 +17,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func route() {
 	http.HandleFunc("/favicon.ico", handleFavicon)
 	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	HandleRestful("/bookmark", NewBookmarkController())
+	HandleRestful("/bookmark", NewBookmarkController)
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
@@ -58,8 +59,18 @@ type Restful interface {
 	Delete()
 }
 
-func HandleRestful(pattern string, rf Restful) {
+var restfulPools = make(map[string]*sync.Pool)
+
+func HandleRestful(pattern string, fn func() interface{}) {
+	restfulPools[pattern] = &sync.Pool{New: fn}
+
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		pool, ok := restfulPools[pattern]
+		if !ok {
+			panic(fmt.Sprintf("HandleRestful: pool for %q not found", pattern))
+		}
+		rf := pool.Get().(Restful)
+		defer pool.Put(rf)
 		rf.SetWR(w, r)
 
 		switch r.Method {
@@ -267,12 +278,6 @@ type Req struct {
 	N      int
 	Key    string
 	Secret string
-}
-
-type Arg struct {
-	Key    string
-	Value  string
-	Method string
 }
 
 type Resp struct {

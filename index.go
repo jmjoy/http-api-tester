@@ -9,13 +9,6 @@ import (
 	"text/template"
 )
 
-type jsonConfig struct {
-	Selected           string
-	Bookmarks, Plugins map[string]map[string]interface{}
-}
-
-var gJsonConfig = new(jsonConfig)
-
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	t, err := template.New("index.html").ParseFiles("view/index.html")
 	if err != nil {

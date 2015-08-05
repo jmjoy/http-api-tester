@@ -42,21 +42,30 @@ function handleBookamrkAdd() {
         return false;
     }
 
+    try {
+        var bookmark = getRequestData();
+        bookmark.name = name;
+    } catch(e) {
+        $("#bookmark_add_err").html(e);
+        $("#bookmark_add_err").removeClass("hidden");
+        return false;
+    }
+
     // 安全禁用
-    $(this).button('loading');
+    var btn = this;
+    $(btn).button('loading');
+
     // 联网
-    var data = {
-        "name":  name,
-        "data":  getRequestData(),
-    };
     $.ajax({
         "url":  g.bookmarkUrl,
         "type":  "POST",
-        "data":  JSON.stringify(data),
+        "data":  JSON.stringify(bookmark),
         "contentType":  "application/json",
+        "cache": false,
+        "dataType": "json",
         "success":  function(data){
             // 恢复按钮状态
-            $(this).button('reset');
+            $(btn).button('reset');
 
             if (data.status != 200) {
                 $("#bookmark_add_err").html(data.msg);
@@ -138,8 +147,21 @@ function bookmarkDrop() {
 }
 
 function bookmarkAdd() {
+    try {
+        getRequestData();
+    } catch(e) {
+        alertMsg(e);
+        return;
+    }
+    $("#bookmark_add_err").html("");
+    $("#bookmark_add_err").addClass("hidden");
     $("#bookmark_add_input").val("");
     $("#add_dialog").modal("show");
+}
+
+function alertMsg(msg) {
+    $("#alerter_content").html(msg);
+    $("#alerter").modal('show');
 }
 
 function argsAdd() {
@@ -163,12 +185,14 @@ function returnArgOptionTpl() {
 
 function getRequestData() {
     var data ={};
+    data.bm = {};
 
+    // 获取数据
     data.method = $("#method").bootstrapSwitch("state") ? "GET" : "POST";
     data.url = $.trim($("#url").val());
-    data.bm_switch = $("#bm_switch").bootstrapSwitch("state");
-    data.bm_n =  $.trim($("#bm_n").val());
-    data.bm_c =  $.trim($("#bm_c").val());
+    data.bm.switch = $("#bm_switch").bootstrapSwitch("state");
+    data.bm.n =  parseInt($.trim($("#bm_n").val()));
+    data.bm.c =  parseInt($.trim($("#bm_c").val()));
 
     data.args = [];
     $("#args_body tr").each(function() {
@@ -188,7 +212,15 @@ function getRequestData() {
     data.plugin.data = {};
     data.plugin.key = bookmark.plugin.key;
     for (var i in bookmark.plugin.data) {
-        data.plugin.data["plugin_"+i] = bookmark.plugin.data[i];
+        data.plugin.data["plugin_"+i] = $.trim($("#plugin_"+i).val());
+    }
+
+    // 校验
+    if (isNaN(data.bm.n) || isNaN(data.bm.c)) {
+        throw '压测数据必须是数字';
+    }
+    if (data.bm.n <= 0 || data.bm.c <= 0) {
+        throw '压测数据必须是正整数';
     }
 
     return data;
