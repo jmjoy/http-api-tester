@@ -14,23 +14,34 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
+	"text/template"
 	"time"
 )
 
+var (
+	gPort       int
+	gConfigPath string
+	gViewDir    string
+	gStaticDir  string
+)
+
 func init() {
-	flag.IntVar(&port, "p", 8080, "服务器运行端口")
+	flag.IntVar(&gPort, "p", 8080, "服务器运行端口")
+	flag.StringVar(&gConfigPath, "config", "config.json", "JSON配置文件路径")
+	flag.StringVar(&gViewDir, "view", "view", "视图文件所在文件夹")
+	flag.StringVar(&gStaticDir, "static", "static", "静态文件所在文件夹")
 	flag.Parse()
 }
 
 func main() {
 	route()
 
-	log.Printf("测试接口服务器在跑了，请访问 http://localhost:%d\n", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
+	log.Printf("测试接口服务器在跑了，请访问 http://localhost:%d\n", gPort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", gPort), nil))
 }
 
 func route() {
@@ -41,6 +52,16 @@ func route() {
 	HandleRestful("/bookmark", NewBookmarkController)
 }
 
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	t, err := template.New("index.html").ParseFiles(filepath.Join(gViewDir, "index.html"))
+	if err != nil {
+		panic(err)
+	}
+	t.Execute(w, map[string]string{
+		"Config": GetConfigJsonString(),
+	})
+}
+
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	f, err := os.Open("favicon.ico")
 	if err != nil {
@@ -49,47 +70,6 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 
 	io.Copy(w, f)
-}
-
-type Restful interface {
-	SetWR(http.ResponseWriter, *http.Request)
-	Get()
-	Post()
-	Put()
-	Delete()
-}
-
-var restfulPools = make(map[string]*sync.Pool)
-
-func HandleRestful(pattern string, fn func() interface{}) {
-	restfulPools[pattern] = &sync.Pool{New: fn}
-
-	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		pool, ok := restfulPools[pattern]
-		if !ok {
-			panic(fmt.Sprintf("HandleRestful: pool for %q not found", pattern))
-		}
-		rf := pool.Get().(Restful)
-		defer pool.Put(rf)
-		rf.SetWR(w, r)
-
-		switch r.Method {
-		case "GET":
-			rf.Get()
-
-		case "POST":
-			rf.Post()
-
-		case "PUT":
-			rf.Put()
-
-		case "DELETE":
-			rf.Delete()
-
-		default:
-			w.Write([]byte("I don't know this method, get out please!"))
-		}
-	})
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {
@@ -285,7 +265,5 @@ type Resp struct {
 	Msg    string
 	Data   map[string]interface{}
 }
-
-var port int
 
 const VERSION = "0.3"
