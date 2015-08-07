@@ -51,5 +51,8 @@ func (this *BookmarkController) Post() {
 		panic(err)
 	}
 
-	this.RenderJson(400, "ok", nil)
+	this.RenderJson(200, "", map[string]string{
+		"insertKey":  rand,
+		"insertName": input.Name,
+	})
 }

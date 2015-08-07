@@ -9,35 +9,40 @@ import (
 )
 
 type JsonConfig struct {
-	Selected  string
-	Bookmarks map[string]Bookmark
-	Plugins   map[string]Plugin
+	Selected  string              `json:"selected"`
+	Bookmarks map[string]Bookmark `json:"bookmarks"`
+	Plugins   map[string]Plugin   `json:"plugins"`
 }
 
 type Bookmark struct {
-	Name, Method, Url string
-	Args              []Arg
-	Bm                Bm
-	Plugin            BookmarkPlugin
+	Name   string         `json:"name"`
+	Method string         `json:"method"`
+	Url    string         `json:"url"`
+	Args   []Arg          `json:"args"`
+	Bm     Bm             `json:"bm"`
+	Plugin BookmarkPlugin `json:"plugin"`
 }
 
 type Arg struct {
-	Key, Value, Method string
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+	Method string `json:"method"`
 }
 
 type Bm struct {
-	Switch bool
-	N, C   uint
+	Switch bool `json:"switch"`
+	N      uint `json:"n"`
+	C      uint `json:"c"`
 }
 
 type BookmarkPlugin struct {
-	Key  string
-	Data map[string]string
+	Key  string            `json:"key"`
+	Data map[string]string `json:"data"`
 }
 
 type Plugin struct {
-	Name   string
-	Fields map[string]string
+	Name   string            `json:"name"`
+	Fields map[string]string `json:"fields"`
 }
 
 var gConfigJsonMutex = new(sync.RWMutex)

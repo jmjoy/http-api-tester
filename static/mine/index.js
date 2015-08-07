@@ -73,10 +73,25 @@ function handleBookamrkAdd() {
                 return false;
             }
 
-            // TODO add bookmark
+            // 成功
+            var option = {
+                "bookmarks": {}
+            };
+            option.bookmarks[data.data.insertKey] = {"name": data.data.insertName};
+
+            $('#add_dialog').modal('hide');
+            var tpl = $("#bookmark_option_tpl").html();
+            var html = juicer(tpl, option);
+            $('#bookmark').append(html);
+
+            $("#bookmark").selectpicker('val', data.data.insertKey);
+            $('#bookmark').selectpicker("refresh");
+
         },
        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+            // 恢复按钮状态
             $(btn).button('reset');
+
             $("#bookmark_add_err").html(textStatus);
             $("#bookmark_add_err").removeClass("hidden");
         }
