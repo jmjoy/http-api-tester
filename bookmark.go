@@ -17,6 +17,27 @@ func NewBookmarkController() interface{} {
 	}
 }
 
+func (this *BookmarkController) Get() {
+	querys := this.r.URL.Query()
+	key := querys.Get("key")
+	if key == "" {
+		this.RenderJson(400, "请输入书签的键", nil)
+		return
+	}
+
+	jsonConfig := GetConfigJson()
+	bookmark, has := jsonConfig.Bookmarks[key]
+	if !has {
+		this.RenderJson(400, "所选书签找不到", nil)
+		return
+	}
+
+	jsonConfig.Selected = key
+	SaveConfigJson(jsonConfig)
+
+	this.RenderJson(200, "", bookmark)
+}
+
 func (this *BookmarkController) Post() {
 	buf, err := ioutil.ReadAll(this.r.Body)
 	if err != nil {
