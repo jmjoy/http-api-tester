@@ -3,6 +3,8 @@
 
 var gData = null;
 var gOptionTpl = null;
+var gConfirmDialogSubmitBtnAction = "";
+var gPluginKey = "";
 
 $(function() {
     // style
@@ -12,24 +14,102 @@ $(function() {
     // btnclick
     gOptionTpl = returnArgOptionTpl();
     $("#args_add_btn").click(argsAdd);
+    $("#bookmark_use_btn").click(handleBookmarkUse);
     $("#bookmark_add_btn").click(bookmarkAdd);
     $("#bookmark_edit_btn").click(bookmarkEdit);
     $("#bookmark_drop_btn").click(bookmarkDrop);
     $("#bookamrkAddBtn").click(handleBookamrkAdd)
     $("#bookmark_add_input").focus(hiddenErrAlert);
+    $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn)
+    $("#plugin_use_btn").click(pluginUse);
+    $("#submit_btn").click(handleSubmit);
 
     // render data
     gData = returnConfigData();
-    renderBookmarkOptions(gData);
-    renderPluginOptions(gData);
+    gPluginKey = gData.bookmarks[gData.selected].plugin.key;
+    renderData(gData);
+});
 
-    var bookmark = gData.bookmarks[gData.selected];
+function pluginUse() {
+    $.get(g.pluginUrl, {}, function(data) {
+        var key = $("#plugin").selectpicker('val');
+        var plugin = data.data.plugins[key];
+        renderPluginPanel(plugin);
+        gPluginKey = key;
+    }, "json");
+}
+
+function handleBookmarkDelete() {
+    var key = $("#bookmark").selectpicker('val');
+    var inputs = {"key": key};
+
+    // 安全禁用
+    var btn = this;
+    $(btn).button('loading');
+
+    // 联网
+    $.ajax({
+        "url":  g.bookmarkUrl + "?key=" + key,
+        "type":  "DELETE",
+        "data":  JSON.stringify(bookmark),
+        "contentType":  "application/json",
+        "cache": false,
+        "dataType": "json",
+        "success":  function(data){
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+
+            if (data.status != 200) {
+                alertMsg(data.msg);
+                return false;
+            }
+
+            // 成功
+            $("#bookmark option[value="+key+"]").remove();
+            $("#bookmark").selectpicker('refresh');
+        },
+       "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+
+            alertMsg(textStatus);
+        }
+    });
+}
+
+function handleBookmarkUse() {
+    var btn = this;
+    $(btn).button('loading');
+
+    var key = $("#bookmark").selectpicker('val');
+    var inputs = {"key": key};
+    $.get(g.bookmarkUrl, inputs, function(data) {
+        $(btn).button('reset');
+
+        if (data.status != 200) {
+            alertMsg(data.msg);
+            return;
+        }
+
+        renderData(data.data);
+
+    }, "json");
+}
+
+function renderData(data) {
+    renderBookmarkOptions(data);
+    renderPluginOptions(data);
+
+    var bookmark = data.bookmarks[data.selected];
     renderContent(bookmark);
+    renderArgsOption(bookmark);
 
-    var plugin = gData.plugins[bookmark.plugin.key];
+    var plugin = data.plugins[bookmark.plugin.key];
     renderPluginPanel(plugin);
     renderPlugin(bookmark, plugin);
-});
+}
 
 function handleBookamrkAdd() {
     var name = $.trim($("#bookmark_add_input").val());
@@ -98,6 +178,52 @@ function handleBookamrkAdd() {
     });
 }
 
+function handleBookmarkEdit() {
+    try {
+        var bookmark = getRequestData();
+        var key = $("#bookmark").selectpicker('val');
+        var name = $("#bookmark option[value="+key+"]").html();
+        bookmark.name = name;
+    } catch(e) {
+        $("#confirm_dialog").modal('hide');
+        alertMsg(e);
+        return false;
+    }
+
+    // 安全禁用
+    var btn = this;
+    $(btn).button('loading');
+
+    // 联网
+    $.ajax({
+        "url":  g.bookmarkUrl,
+        "type":  "PUT",
+        "data":  JSON.stringify(bookmark),
+        "contentType":  "application/json",
+        "cache": false,
+        "dataType": "json",
+        "success":  function(data){
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+
+            if (data.status != 200) {
+                alertMsg(data.msg);
+                return false;
+            }
+
+            // 成功，无动作
+        },
+       "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+
+            alertMsg(textStatus);
+        }
+    });
+}
+
 function hiddenErrAlert() {
     $("#bookmark_add_err").addClass("hidden");
 }
@@ -115,9 +241,10 @@ function renderPluginPanel(plugin) {
 }
 
 function renderArgsOption(bookmark) {
-    var tpl = $("#args_tpl").val();
+    var tpl = $("#args_tpl").html();
     var html = juicer(tpl, bookmark);
     $("#args_body").html(html);
+    $('.switch[type="checkbox"]').bootstrapSwitch();
 }
 
 function renderContent(bookmark) {
@@ -154,13 +281,27 @@ function returnConfigData() {
 function bookmarkEdit() {
     $("#confirm_dialog_title").html("编辑书签");
     $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
+    gConfirmDialogSubmitBtnAction = "edit";
     $("#confirm_dialog").modal("show");
 }
 
 function bookmarkDrop() {
     $("#confirm_dialog_title").html("删除书签");
     $("#confirm_dialog_text").html("您确定删除选定书签吗？");
+    gConfirmDialogSubmitBtnAction = "drop";
     $("#confirm_dialog").modal("show");
+}
+
+function clickConfirmDialogSubmitBtn () {
+    switch (gConfirmDialogSubmitBtnAction) {
+    case 'edit':
+        handleBookmarkEdit();
+        break;
+
+    case 'drop':
+        handleBookmarkDelete();
+        break;
+    }
 }
 
 function bookmarkAdd() {
@@ -224,12 +365,11 @@ function getRequestData() {
         });
     });
 
-    var bookmark = gData.bookmarks[gData.selected];
     data.plugin = {};
     data.plugin.data = {};
-    data.plugin.key = bookmark.plugin.key;
-    for (var i in bookmark.plugin.data) {
-        data.plugin.data["plugin_"+i] = $.trim($("#plugin_"+i).val());
+    data.plugin.key = gPluginKey;
+    for (var i in gData.plugins[gPluginKey].fields) {
+        data.plugin.data[i] = $.trim($("#plugin_"+i).val());
     }
 
     // 校验
@@ -241,6 +381,44 @@ function getRequestData() {
     }
 
     return data;
+}
+
+function handleSubmit() {
+    var data = null;
+    try {
+        data = getRequestData();
+    } catch(e) {
+        alertMsg(e);
+        return;
+    }
+
+    var btn = this;
+    $(btn).button('loading');
+
+	$.ajax({
+        'url': g.submitUrl,
+		'data': JSON.stringify(data),
+		'type': 'POST',
+		'processData': false,
+		'contentType': 'application/json',
+		'dataType':	'json',
+		'success':	function(data) {
+            $(btn).button('reset');
+
+            if (data.status != 200) {
+                alertMsg(data.msg);
+                return false;
+            }
+
+            // 成功
+		},
+		'error':	function (XMLHttpRequest, textStatus, errorThrown) {
+            $(btn).button('reset');
+            alertMsg(e);
+		}
+	});
+
+    return false;
 }
 
 var g_num = 0;

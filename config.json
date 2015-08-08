@@ -1,7 +1,7 @@
 {
-    "selected": "0000000000000000000",
+    "selected": "1439031067194601835",
     "bookmarks": {
-        "0000000000000000000": {
+        "1439031067194601835": {
             "name": "默认配置",
             "method": "GET",
             "url": "",
@@ -19,85 +19,8 @@
                 }
             }
         },
-        "1438946699298195700": {
-            "name": "my",
-            "method": "POST",
-            "url": "http://www.baidu.com",
-            "args": [
-                {
-                    "key": "key1",
-                    "value": "value1",
-                    "method": "GET"
-                },
-                {
-                    "key": "key2",
-                    "value": "value2",
-                    "method": "POST"
-                }
-            ],
-            "bm": {
-                "switch": true,
-                "n": 999,
-                "c": 99
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "plugin_keyname": "abc",
-                    "plugin_password": "def"
-                }
-            }
-        },
-        "1438949631526909600": {
-            "name": "good",
-            "method": "POST",
-            "url": "http://amuson.com",
-            "args": [
-                {
-                    "key": "k",
-                    "value": "v",
-                    "method": "GET"
-                }
-            ],
-            "bm": {
-                "switch": true,
-                "n": 99999,
-                "c": 987
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "plugin_keyname": "key",
-                    "plugin_password": "passwd"
-                }
-            }
-        },
-        "1438949808315021300": {
-            "name": "fuck",
-            "method": "POST",
-            "url": "http://amuson.com",
-            "args": [
-                {
-                    "key": "k",
-                    "value": "v",
-                    "method": "GET"
-                }
-            ],
-            "bm": {
-                "switch": true,
-                "n": 99999,
-                "c": 987
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "plugin_keyname": "key",
-                    "plugin_password": "passwd"
-                }
-            }
-        },
-        "1438949835767591500": {
-            "name": "你好",
+        "1439035870973496074": {
+            "name": "NotUse",
             "method": "GET",
             "url": "",
             "args": [],
@@ -109,26 +32,8 @@
             "plugin": {
                 "key": "md5signature",
                 "data": {
-                    "plugin_keyname": "api_sign",
-                    "plugin_password": ""
-                }
-            }
-        },
-        "1438949853787622200": {
-            "name": "asdf",
-            "method": "GET",
-            "url": "",
-            "args": [],
-            "bm": {
-                "switch": false,
-                "n": 100,
-                "c": 10
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "plugin_keyname": "api_sign",
-                    "plugin_password": ""
+                    "keyname": "",
+                    "password": ""
                 }
             }
         }

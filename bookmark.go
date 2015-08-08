@@ -26,7 +26,7 @@ func (this *BookmarkController) Get() {
 	}
 
 	jsonConfig := GetConfigJson()
-	bookmark, has := jsonConfig.Bookmarks[key]
+	_, has := jsonConfig.Bookmarks[key]
 	if !has {
 		this.RenderJson(400, "所选书签找不到", nil)
 		return
@@ -35,7 +35,7 @@ func (this *BookmarkController) Get() {
 	jsonConfig.Selected = key
 	SaveConfigJson(jsonConfig)
 
-	this.RenderJson(200, "", bookmark)
+	this.RenderJson(200, "", jsonConfig)
 }
 
 func (this *BookmarkController) Post() {
@@ -76,4 +76,70 @@ func (this *BookmarkController) Post() {
 		"insertKey":  rand,
 		"insertName": input.Name,
 	})
+}
+
+func (this *BookmarkController) Put() {
+	buf, err := ioutil.ReadAll(this.r.Body)
+	if err != nil {
+		this.RenderJson(400, "读取输入出错[罕见]", nil)
+		return
+	}
+
+	// 解析输入JSON
+	input := new(Bookmark)
+	err = json.Unmarshal(buf, input)
+	if err != nil {
+		this.RenderJson(40001, "传入参数[JSON]解析出错: "+err.Error(), nil)
+		return
+	}
+
+	// 检查名字是否存在
+	jsonConfig := GetConfigJson()
+	names := make(map[string]string)
+	for key, row := range jsonConfig.Bookmarks {
+		names[row.Name] = key
+	}
+	editKey, ok := names[input.Name]
+	if !ok {
+		this.RenderJson(40010, "书签名不存在", nil)
+		return
+	}
+
+	// 修改书签
+	jsonConfig.Bookmarks[editKey] = *input
+
+	// 持久化到文件
+	err = SaveConfigJson(jsonConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	this.RenderJson(200, "", nil)
+}
+
+func (this *BookmarkController) Delete() {
+	querys := this.r.URL.Query()
+	key := querys.Get("key")
+	if key == "" {
+		this.RenderJson(400, "请输入书签的键", nil)
+		return
+	}
+
+	jsonConfig := GetConfigJson()
+	_, has := jsonConfig.Bookmarks[key]
+	if !has {
+		this.RenderJson(400, "所选书签找不到", nil)
+		return
+	}
+	if jsonConfig.Selected == key {
+		this.RenderJson(400, "不能删除使用中的书签", nil)
+		return
+	}
+
+	// 删除
+	delete(jsonConfig.Bookmarks, key)
+
+	SaveConfigJson(jsonConfig)
+
+	this.RenderJson(200, "", nil)
 }

@@ -2,3 +2,4 @@
 *.zip
 *.exe
 /http_interface_test_server
+tags

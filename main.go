@@ -47,9 +47,10 @@ func main() {
 func route() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
-	http.HandleFunc("/submit", submitHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	HandleRestful("/bookmark", NewBookmarkController)
+	HandleRestful("/plugin", NewPluginController)
+	HandleRestful("/submit", NewSubmitController)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
