@@ -1,5 +1,5 @@
 {
-    "selected": "1439093623952589679",
+    "selected": "1439031067194601835",
     "bookmarks": {
         "1439031067194601835": {
             "name": "默认配置",
@@ -10,53 +10,6 @@
                 "switch": false,
                 "n": 100,
                 "c": 10
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "keyname": "api_sign",
-                    "password": ""
-                }
-            }
-        },
-        "1439035870973496074": {
-            "name": "NotUse",
-            "method": "GET",
-            "url": "",
-            "args": [],
-            "bm": {
-                "switch": false,
-                "n": 100,
-                "c": 10
-            },
-            "plugin": {
-                "key": "md5signature",
-                "data": {
-                    "keyname": "",
-                    "password": ""
-                }
-            }
-        },
-        "1439093623952589679": {
-            "name": "hello",
-            "method": "POST",
-            "url": "http://www.baidu.com/index.html?a=b",
-            "args": [
-                {
-                    "key": "c",
-                    "value": "d",
-                    "method": "GET"
-                },
-                {
-                    "key": "v",
-                    "value": "k",
-                    "method": "POST"
-                }
-            ],
-            "bm": {
-                "switch": true,
-                "n": 10,
-                "c": 5
             },
             "plugin": {
                 "key": "md5signature",
