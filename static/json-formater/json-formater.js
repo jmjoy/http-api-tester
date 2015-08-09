@@ -36,9 +36,9 @@ JsonFormater.prototype = {
             $(this.options.dom).html("<pre class='jf-CodeContainer'>" + html + "</pre>");
             this.isFormated = true;
         } catch (e) {
-            alert("JSON数据格式不正确:\n" + e.message);
             $(this.options.dom).html("");
             this.isFormated = false;
+            throw e;
         }
     },
     bindEvent: function () {
@@ -199,4 +199,3 @@ JsonFormater.prototype = {
         return html;
     }
 };
-

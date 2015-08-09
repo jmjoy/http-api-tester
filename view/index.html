@@ -221,7 +221,7 @@
         <div class="text-right">
             <button id="result_new_tab_btn" type="button" class="btn btn-default btn-xs"> 在新标签页中浏览 </button>
         </div>
-        <iframe id="result_test_panel"></iframe>
+        <div id="result_test_panel"></div>
         <div id="result_header_panel">
             <table class="table table-condensed">
             <tr>
@@ -241,7 +241,7 @@
             </table>
         </div>
         {@if bm}
-        <pre id="result_bm_panel">${bm}</pre>
+        <pre id="result_bm_panel">压测： ${bm}</pre>
         {@/if}
     </script>
 
