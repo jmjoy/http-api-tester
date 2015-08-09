@@ -267,4 +267,4 @@ type Resp struct {
 	Data   map[string]interface{}
 }
 
-const VERSION = "0.3"
+const VERSION = "0.5"
