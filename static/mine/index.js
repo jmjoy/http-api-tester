@@ -411,6 +411,7 @@ function handleSubmit() {
             }
 
             // 成功
+            renderResult(data.data);
 		},
 		'error':	function (XMLHttpRequest, textStatus, errorThrown) {
             $(btn).button('reset');
@@ -420,6 +421,15 @@ function handleSubmit() {
 
     return false;
 }
+
+function renderResult(result) {
+    var tpl = $("#result_tpl").html();
+    var html = juicer(tpl, result);
+    $("#result_panel").html(html);
+
+    //$("#result_test_panel").contents(result.test);
+}
+
 
 var g_num = 0;
 var submit_url = '/submit';
@@ -534,4 +544,3 @@ function onSubmit() {
 
      return false;
 }
-

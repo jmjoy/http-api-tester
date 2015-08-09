@@ -87,7 +87,7 @@
                             <input type="checkbox" class="switch" id="bm_switch" data-size="mini" checked="checked" />
                         </div>                        
                         <div class="form-group">
-                            <label for="boom_n">次数：</label>
+                            <label for="boom_n">请求数：</label>
                             <input type="number" name="bm_n" id="bm_n" class="form-control" value="100" />
                         </div>
                         <div class="form-group">
@@ -114,9 +114,8 @@
             </div>
         </div>
 
-        <div class="col-md-6 content-right">
+        <div id="result_panel" class="col-md-6 content-right"></div>
 
-        </div>
     </div>
 
     <!-- 添加对话框 -->
@@ -218,6 +217,34 @@
         {@/each}
     </script>
 
+    <script id="result_tpl" type="text/template">
+        <div class="text-right">
+            <button id="result_new_tab_btn" type="button" class="btn btn-default btn-xs"> 在新标签页中浏览 </button>
+        </div>
+        <iframe id="result_test_panel"></iframe>
+        <div id="result_header_panel">
+            <table class="table table-condensed">
+            <tr>
+                <th>response status</th>
+                <td>${status}</td>
+            </tr>
+            <tr>
+                <th>reqeust url</th>
+                <td>${requrl}</td>
+            </tr>
+            {@if reqBody != ""}
+            <tr>
+                <th>reqeust body</th>
+                <td>${reqBody}</td>
+            </tr>
+            {@/if}
+            </table>
+        </div>
+        {@if bm}
+        <pre id="result_bm_panel">${bm}</pre>
+        {@/if}
+    </script>
+
     <script id="config_json" type="text/template">{{.Config}}</script>
 
     <!-- 全局变量 -->
@@ -236,7 +263,6 @@
     <script src="/static/bootstrap-switch/bootstrap-switch.min.js"></script>
     <script src="/static/bootstrap-select/js/bootstrap-select.min.js"></script>
     <script src="/static/mine/index.js"></script>
-
 
 </body>
 

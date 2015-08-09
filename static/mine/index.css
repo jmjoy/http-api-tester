@@ -52,6 +52,7 @@ div.content-left {
 }
 
 div.content-right {
+    padding-top: 5px;
     min-height: 500px;
     background: rgb(255, 251, 232);
 }
@@ -71,4 +72,9 @@ td {
 
 #bm_n, #bm_c {
     width: 8em;
+}
+
+#result_test_panel, #result_test_panel, #result_header_panel {
+    margin: 5px auto;
+    width: 100%;
 }
