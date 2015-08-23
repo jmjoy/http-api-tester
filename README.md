@@ -1,4 +1,4 @@
-# http-interface-tester
+# http-api-tester
 
 HTTP接口测试工具
 
