@@ -28,6 +28,13 @@
                 "password": "密码"
             }
         },
+        "md5signature-noquery": {
+            "name": "MD5签名认证-不包含Query参数",
+            "fields": {
+                "keyname": "密钥名称",
+                "password": "密码"
+            }
+        },
         "notuse": {
             "name": "不使用",
             "fields": {}

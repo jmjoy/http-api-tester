@@ -15,9 +15,10 @@ import (
 )
 
 type RequestStruct struct {
-	Method   string
-	URL      *url.URL
-	PostData url.Values
+	Method    string
+	URL       *url.URL
+	QueryData url.Values
+	PostData  url.Values
 }
 
 type SubmitController struct {
