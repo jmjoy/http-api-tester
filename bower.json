@@ -1,0 +1,22 @@
+{
+  "name": "http-api-tester",
+  "version": "0.0.0",
+  "homepage": "https://github.com/jmjoy/http-api-tester",
+  "authors": [
+    "jmjoy <918734043@qq.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootstrap-select": "~1.7.5",
+    "bootstrap-switch": "~3.3.2",
+    "handlebars": "~4.0.5"
+  }
+}
