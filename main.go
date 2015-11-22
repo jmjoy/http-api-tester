@@ -1,12 +1,11 @@
 package main
 
 import (
+	"encoding/base64"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"text/template"
 )
@@ -55,11 +54,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
-	f, err := os.Open("favicon.ico")
+	favicon, err := base64.StdEncoding.DecodeString(text["favicon.b64"])
 	if err != nil {
-		panic(err)
+		fmt.Println("[ERROR] favicon.ico")
+		return
 	}
-	defer f.Close()
 
-	io.Copy(w, f)
+	w.Write(favicon)
 }
