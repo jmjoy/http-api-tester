@@ -22,9 +22,15 @@ _testmain.go
 *.exe
 *.test
 *.prof
-
-/release/
 *.zip
-*.exe
-/http_interface_test_server
+
 tags
+
+# release directory
+/release/
+
+# binary
+/http-api-tester
+
+# auto-create file
+/text.go
