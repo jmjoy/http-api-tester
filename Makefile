@@ -12,4 +12,4 @@ create-view:
 		static/bower_components/jquery/dist/jquery.min.js \
 		static/*.* \
 		view/* \
-		favicon.b64
+		favicon.ico

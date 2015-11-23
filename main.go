@@ -55,7 +55,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
-	favicon, err := base64.StdEncoding.DecodeString(text["favicon.b64"])
+	favicon, err := base64.StdEncoding.DecodeString(text["favicon.ico"])
 	if err != nil {
 		fmt.Println("[ERROR] favicon.ico")
 		return
