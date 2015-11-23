@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>接口测试工具</title>
+
+<link rel="stylesheet" href="/static/bootstrap-3.3.5/css/bootstrap.min.css">
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="stylesheet" href="/static/mine/index.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="/static/bootstrap-switch/bootstrap-switch.min.css" type="text/css" charset="utf-8">
+<link rel="stylesheet" href="/static/bootstrap-select/css/bootstrap-select.min.css" type="text/css" charset="utf-8">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">接口测试工具</a>
+
+            <ul class="nav navbar-nav navbar-left">
+                <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试</button></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">当前书签：</a></li>
+
+                <li>
+                    <select class="selectpicker navbar-btn" id="bookmark"></select>
+                </li>
+
+                <li><button type="button" id="bookmark_use_btn" class="btn btn-success navbar-btn" data-loading-text="使用中。。。"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 使用</button></li>
+                <li><button type="button" id="bookmark_add_btn" class="btn btn-info navbar-btn"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加</button></li>
+                <li><button type="button" id="bookmark_edit_btn" class="btn btn-warning navbar-btn"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 编辑</button></li>
+                <li><button type="button" id="bookmark_drop_btn" class="btn btn-danger navbar-btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 删除</button></li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="container-fluid content">
+        <div class="col-md-6 content-left">
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>请求方式：</label>
+                            <input type="checkbox" class="switch" id="method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="mini" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="url">URL：</label>
+                            <input type="text" name="url" id="url" class="form-control" placeholder="http://" style="width: 20em;" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <table class="table table-bordered table-condensed">
+                    <thead>
+                        <th>键：</th>
+                        <th>值：</th>
+                        <th width="20%">类型：</th>
+                        <th width="10%"><button type="button" id="args_add_btn" class="btn btn-sm btn-block btn-info"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></th>
+                    </thead>
+                    <tbody id="args_body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>压测：</label>
+                            <input type="checkbox" class="switch" id="bm_switch" data-size="mini" checked="checked" />
+                        </div>                        
+                        <div class="form-group">
+                            <label for="boom_n">请求数：</label>
+                            <input type="number" name="bm_n" id="bm_n" class="form-control" value="100" />
+                        </div>
+                        <div class="form-group">
+                            <label for="boom_c">并发数：</label>
+                            <input type="number" name="bm_c" id="bm_c" class="form-control" value="10" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>插件：</label>
+                            <select class="selectpicker" id="plugin"></select>
+                            <button type="button" id="plugin_use_btn" class="btn btn-default">使用</button>
+                        </div>
+                    </form>
+                    <hr />
+                    <form id="plugin_panel" class="form-inline">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="result_panel" class="col-md-6 content-right"></div>
+
+    </div>
+
+    <!-- 添加对话框 -->
+    <div class="modal fade" id="add_dialog" tabindex="-1" role="dialog" aria-labelledby="add_dialog_title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add_dialog_title">添加书签</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="bookmark_add_err" class="alert alert-danger hidden" role="alert"></div>
+                    <label for="bookmark_add_input">书签名称：</label>
+                    <input type="text" id="bookmark_add_input" class="form-control" placeholder="1~20位非空字符" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="bookamrkAddBtn" class="btn btn-primary" data-loading-text="添加中。。。">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div class="modal fade" id="confirm_dialog" tabindex="-1" role="dialog" aria-labelledby="confirm_dialog_title">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="confirm_dialog_title"></h4>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm_dialog_text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="confirm_dialog_submit_btn" class="btn btn-primary" data-loading-text="操作中。。。">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal fade" id="alerter" tabindex="-1" role="dialog" aria-labelledby="alerter_label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="alerter_label">警告！</h4>
+                </div>
+                <div class="modal-body">
+                    <p id="alerter_content"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script id="args_tpl" type="text/template">
+        {@each args as it,index}
+        <tr>
+            <td>
+                <input type="text" class="form-control arg-key" value="${it.key}" />
+            </td>
+            <td>
+                <input type="text" class="form-control arg-value" value="${it.value}" />
+            </td>
+            <td>
+                <input type="checkbox" class="switch arg-method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" {@if it.method=="GET"}checked="checked"{@/if} />
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-block btn-danger" onclick="argsRemove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+            </td>
+        </tr>
+        {@/each}
+    </script>
+
+    <script id="bookmark_option_tpl" type="text/template">
+        {@each bookmarks as it,index}
+        <option value="${index}">${it.name}</option>
+        {@/each}
+    </script>
+
+    <script id="plugin_option_tpl" type="text/template">
+        {@each plugins as it,index}
+        <option value="${index}">${it.name}</option>
+        {@/each}
+    </script>
+
+    <script id="plugin_panel_tpl" type="text/template">
+        {@each fields as it,index}
+         <div class="form-group">
+            <label for="plugin_${index}">${it}：</label>
+            <input type="text" id="plugin_${index}" class="form-control">
+        </div>
+        {@/each}
+    </script>
+
+    <script id="result_tpl" type="text/template">
+        <div class="text-right">
+            <button id="result_new_tab_btn" type="button" class="btn btn-default btn-xs"> 在新标签页中浏览 </button>
+        </div>
+        <div id="result_test_panel"></div>
+        <div id="result_header_panel">
+            <table class="table table-condensed">
+            <tr>
+                <th>response status</th>
+                <td>${status}</td>
+            </tr>
+            <tr>
+                <th>reqeust url</th>
+                <td>${requrl}</td>
+            </tr>
+            {@if reqBody != ""}
+            <tr>
+                <th>reqeust body</th>
+                <td>${reqBody}</td>
+            </tr>
+            {@/if}
+            </table>
+        </div>
+        {@if bm}
+        <pre id="result_bm_panel">压测： ${bm}</pre>
+        {@/if}
+    </script>
+
+    <script id="config_json" type="text/template">{{.Config}}</script>
+
+    <!-- 全局变量 -->
+    <script type="text/javascript">
+        var g = {
+            "bookmarkUrl":  "/bookmark",
+            "pluginUrl":    "/plugin",
+            "submitUrl":    "/submit"
+        };
+    </script>
+
+    <script src="/static/jquery/jquery-1.11.3.min.js"></script>
+    <script src="/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="/static/juicer/juicer.js"></script>
+    <script src="/static/json-formater/json-formater.js"></script>
+    <script src="/static/bootstrap-switch/bootstrap-switch.min.js"></script>
+    <script src="/static/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="/static/mine/index.js"></script>
+
+</body>
+
+</html>

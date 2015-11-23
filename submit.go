@@ -59,6 +59,12 @@ func (this *SubmitController) Post() {
 		return
 	}
 
+	querys := reqS.URL.Query()
+	for k, v := range reqS.QueryData {
+		querys[k] = v
+	}
+	reqS.URL.RawQuery = querys.Encode()
+
 	respM := make(map[string]string, 2)
 	// curl
 	err = this.submitTest(reqS, respM)
@@ -98,13 +104,13 @@ func (this *SubmitController) getRequestStruct(bookmark *Bookmark) (*RequestStru
 		return nil, errors.New("请指定host")
 	}
 
-	query := u.Query()
+	queryData := make(url.Values)
 	postData := make(url.Values)
 
 	for _, v := range bookmark.Args {
 		switch strings.ToUpper(v.Method) {
 		case "GET":
-			query.Add(v.Key, v.Value)
+			queryData.Add(v.Key, v.Value)
 
 		case "POST":
 			postData.Add(v.Key, v.Value)
@@ -114,12 +120,11 @@ func (this *SubmitController) getRequestStruct(bookmark *Bookmark) (*RequestStru
 		}
 	}
 
-	u.RawQuery = query.Encode()
-
 	return &RequestStruct{
-		Method:   bookmark.Method,
-		URL:      u,
-		PostData: postData,
+		Method:    bookmark.Method,
+		URL:       u,
+		QueryData: queryData,
+		PostData:  postData,
 	}, nil
 }
 
