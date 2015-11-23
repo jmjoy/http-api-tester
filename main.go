@@ -4,13 +4,14 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"path/filepath"
+	"path"
 	"text/template"
 )
 
-const VERSION = "0.4"
+const VERSION = "0.5"
 
 var (
 	gPort       int
@@ -37,14 +38,14 @@ func main() {
 func route() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/favicon.ico", handleFavicon)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.HandleFunc("/static/", handleStatic)
 	HandleRestful("/bookmark", NewBookmarkController)
 	HandleRestful("/plugin", NewPluginController)
 	HandleRestful("/submit", NewSubmitController)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
-	t, err := template.New("index.html").ParseFiles(filepath.Join(gViewDir, "index.html"))
+	t, err := template.New("index.html").Parse(text["view/index.html"])
 	if err != nil {
 		panic(err)
 	}
@@ -61,4 +62,26 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(favicon)
+}
+
+func handleStatic(w http.ResponseWriter, r *http.Request) {
+	uS := r.URL.String()[1:] // remove fst "/"
+	content, has := text[uS]
+	if !has {
+		fmt.Println(uS)
+		return
+	}
+
+	ext := path.Ext(uS)
+	var cType string
+	switch ext {
+	case ".css":
+		cType = "text/css;charset=utf-8"
+	case ".js":
+		cType = "application/x-javascript"
+	default:
+		cType = "text/html;charset=utf-8"
+	}
+	w.Header().Set("Content-Type", cType)
+	io.WriteString(w, content)
 }
