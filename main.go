@@ -24,10 +24,11 @@ func init() {
 	flag.StringVar(&gConfigPath, "config", "config.json", "JSON配置文件路径")
 	flag.StringVar(&gViewDir, "view", "view", "视图文件所在文件夹")
 	flag.StringVar(&gStaticDir, "static", "static", "静态文件所在文件夹")
-	flag.Parse()
 }
 
 func main() {
+	flag.Parse()
+
 	route()
 
 	log.Printf("测试接口服务器在跑了，请访问 http://localhost:%d\n", gPort)
@@ -46,7 +47,7 @@ func route() {
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	t, err := template.New("index.html").Parse(text["view/index.html"])
 	if err != nil {
-		panic(err)
+		fmt.Println("[ERROR] %s", r.URL)
 	}
 	t.Execute(w, map[string]string{
 		"Config": GetConfigJsonString(),
@@ -84,7 +85,7 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	if has {
 		cType = mimeType
 		buf = []byte(content)
-	} else {
+	} else { // is not textual file
 		cType = ""
 		var err error
 		buf, err = base64.StdEncoding.DecodeString(content)

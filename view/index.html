@@ -177,7 +177,7 @@
     </div>
 
 
-    <script id="args_tpl" type="text/template">
+    <script id="args_tpl" type="text/x-handlebars-template">
         {@each args as it,index}
         <tr>
             <td>
@@ -196,19 +196,19 @@
         {@/each}
     </script>
 
-    <script id="bookmark_option_tpl" type="text/template">
+    <script id="bookmark_option_tpl" type="text/x-handlebars-template">
         {@each bookmarks as it,index}
         <option value="${index}">${it.name}</option>
         {@/each}
     </script>
 
-    <script id="plugin_option_tpl" type="text/template">
+    <script id="plugin_option_tpl" type="text/x-handlebars-template">
         {@each plugins as it,index}
         <option value="${index}">${it.name}</option>
         {@/each}
     </script>
 
-    <script id="plugin_panel_tpl" type="text/template">
+    <script id="plugin_panel_tpl" type="text/x-handlebars-template">
         {@each fields as it,index}
          <div class="form-group">
             <label for="plugin_${index}">${it}：</label>
@@ -217,7 +217,7 @@
         {@/each}
     </script>
 
-    <script id="result_tpl" type="text/template">
+    <script id="result_tpl" type="text/x-handlebars-template">
         <div class="text-right">
             <button id="result_new_tab_btn" type="button" class="btn btn-default btn-xs"> 在新标签页中浏览 </button>
         </div>
@@ -245,7 +245,7 @@
         {@/if}
     </script>
 
-    <script id="config_json" type="text/template">{{.Config}}</script>
+    <script id="config_json" type="text/x-handlebars-template">{{.Config}}</script>
 
     <!-- 全局变量 -->
     <script type="text/javascript">
@@ -258,10 +258,9 @@
 
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/static/bower_components/juicer/juicer.js"></script>
-    <script src="/static/json-formater.js"></script>
     <script src="/static/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="/static/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script src="/static/bower_components/handlebars/handlebars.min.js"></script>
     <script src="/static/index.js"></script>
 
 </body>
