@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"path"
@@ -64,6 +63,12 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	w.Write(favicon)
 }
 
+var staticExtMimeMap = map[string]string{
+	".css": "text/css;charset=utf-8",
+	".js":  "application/x-javascript",
+	".map": "text/map;charset=utf-8",
+}
+
 func handleStatic(w http.ResponseWriter, r *http.Request) {
 	uS := r.URL.String()[1:] // remove fst "/"
 	content, has := text[uS]
@@ -73,15 +78,21 @@ func handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ext := path.Ext(uS)
+	var buf []byte
 	var cType string
-	switch ext {
-	case ".css":
-		cType = "text/css;charset=utf-8"
-	case ".js":
-		cType = "application/x-javascript"
-	default:
-		cType = "text/html;charset=utf-8"
+	mimeType, has := staticExtMimeMap[ext]
+	if has {
+		cType = mimeType
+		buf = []byte(content)
+	} else {
+		cType = ""
+		var err error
+		buf, err = base64.StdEncoding.DecodeString(content)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 	w.Header().Set("Content-Type", cType)
-	io.WriteString(w, content)
+	w.Write(buf)
 }
