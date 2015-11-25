@@ -18,6 +18,14 @@ func NewController(w http.ResponseWriter, r *http.Request) *Controller {
 	}
 }
 
+func (this *Controller) W() http.ResponseWriter {
+	return this.w
+}
+
+func (this *Controller) R() *http.Request {
+	return this.r
+}
+
 func (this *Controller) RenderJson(data interface{}) {
 	RenderJson(this.w, 200, "", data)
 }

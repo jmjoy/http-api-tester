@@ -33,4 +33,4 @@ tags
 /http-api-tester
 
 # auto-create file
-/text.go
+/text/text.go

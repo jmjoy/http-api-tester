@@ -2,7 +2,7 @@ http-api-tester:
 	go build && ./http-api-tester
 
 create-view:
-	file2string \
+	file2string -pkg text -o text/text.go -var Text \
 		static/bower_components/bootstrap/dist/**/*.min.* \
 		static/bower_components/bootstrap/dist/fonts/* \
 		static/bower_components/bootstrap-select/dist/**/*.min.* \

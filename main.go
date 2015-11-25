@@ -7,9 +7,8 @@ import (
 	"log"
 	"net/http"
 	"path"
-	"text/template"
 
-	"github.com/ttacon/chalk"
+	"github.com/jmjoy/http-api-tester/router"
 )
 
 const VERSION = "0.5"
@@ -31,7 +30,8 @@ func init() {
 func main() {
 	flag.Parse()
 
-	route()
+	router.Router()
+	//route()
 
 	log.Printf("测试接口服务器在跑了，请访问 http://localhost:%d\n", gPort)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", gPort), nil))
@@ -44,18 +44,6 @@ func route() {
 	HandleRestful("/bookmark", NewBookmarkController)
 	HandleRestful("/plugin", NewPluginController)
 	HandleRestful("/submit", NewSubmitController)
-}
-
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(chalk.Magenta.Color("You can use colors to color specific phrases"))
-
-	t, err := template.New("index.html").Parse(text["view/index.html"])
-	if err != nil {
-		fmt.Println("[ERROR] %s", r.URL)
-	}
-	t.Execute(w, map[string]string{
-		"Config": GetConfigJsonString(),
-	})
 }
 
 func handleFavicon(w http.ResponseWriter, r *http.Request) {
