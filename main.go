@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"path"
 	"text/template"
+
+	"github.com/ttacon/chalk"
 )
 
 const VERSION = "0.5"
@@ -45,6 +47,8 @@ func route() {
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(chalk.Magenta.Color("You can use colors to color specific phrases"))
+
 	t, err := template.New("index.html").Parse(text["view/index.html"])
 	if err != nil {
 		fmt.Println("[ERROR] %s", r.URL)
