@@ -13,6 +13,6 @@ func LogError(e interface{}) {
 }
 
 func LogStatusError(r *http.Request, err *statusError) {
-	message := fmt.Sprintf("<%d> %s (%s)", err.code, err.message, r.URL)
+	message := fmt.Sprintf("<%d> %s (%s)", err.status, err.message, r.URL)
 	LogError(message)
 }

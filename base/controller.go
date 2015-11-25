@@ -1,54 +1,43 @@
 package base
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
-var _ Restful = &controller{}
+var _ Restful = &Controller{}
 
-type controller struct {
+type Controller struct {
 	w http.ResponseWriter
 	r *http.Request
 }
 
-func NewController(w http.ResponseWriter, r *http.Request) *controller {
-	return &controller{
+func NewController(w http.ResponseWriter, r *http.Request) *Controller {
+	return &Controller{
 		w: w,
 		r: r,
 	}
 }
 
-func (this *controller) RenderJson(code int, msg string, data interface{}) {
-	out := map[string]interface{}{
-		"status":  code,
-		"message": msg,
-		"data":    data,
-	}
-	buf, err := json.Marshal(out)
-	if err != nil {
-		panic(err)
-	}
-
-	this.w.Write(buf)
+func (this *Controller) RenderJson(data interface{}) {
+	RenderJson(this.w, 200, "", data)
 }
 
-func (this *controller) MethodNotAllowed() *statusError {
+func (this *Controller) MethodNotAllowed() error {
 	return ErrorMethodNotAllowed
 }
 
-func (this *controller) Get() *statusError {
+func (this *Controller) Get() error {
 	return this.MethodNotAllowed()
 }
 
-func (this *controller) Post() *statusError {
+func (this *Controller) Post() error {
 	return this.MethodNotAllowed()
 }
 
-func (this *controller) Put() *statusError {
+func (this *Controller) Put() error {
 	return this.MethodNotAllowed()
 }
 
-func (this *controller) Delete() *statusError {
+func (this *Controller) Delete() error {
 	return this.MethodNotAllowed()
 }

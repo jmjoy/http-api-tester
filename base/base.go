@@ -5,6 +5,13 @@ import (
 	"net/http"
 )
 
+type Restful interface {
+	Get() error
+	Post() error
+	Put() error
+	Delete() error
+}
+
 type controllerNewer func(http.ResponseWriter, *http.Request) Restful
 
 func HandleRestful(pattern string, fn controllerNewer) {
@@ -32,22 +39,23 @@ func HandleRestful(pattern string, fn controllerNewer) {
 		if err != nil {
 			switch err.(type) {
 			case *apiStatusError: // api error
-				RenderApiError(w, err.(*apiStatusError))
+				apiStatusErr := err.(*apiStatusError)
+				RenderJson(w, apiStatusErr.status, apiStatusErr.message, nil)
 
 			case *statusError: // system error
 				statusErr := err.(*statusError)
 				LogStatusError(r, statusErr)
-				http.Error(w, statusErr.message, statusErr.code)
+				http.Error(w, statusErr.message, statusErr.status)
 			}
 		}
 	})
 }
 
-func RenderApiError(w http.ResponseWriter, apiStatusErr *apiStatusError) {
+func RenderJson(w http.ResponseWriter, status int, message string, data interface{}) {
 	out := map[string]interface{}{
-		"status":  apiStatusErr.code,
-		"message": apiStatusErr.message,
-		"data":    nil,
+		"status":  status,
+		"message": message,
+		"data":    data,
 	}
 	buf, err := json.Marshal(out)
 	if err != nil {

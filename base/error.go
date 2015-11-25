@@ -8,19 +8,19 @@ import (
 var _ error = &statusError{}
 
 type statusError struct {
-	code    int
+	status  int
 	message string
 }
 
-func NewStatusError(code int, message string) *statusError {
+func NewStatusError(status int, message string) *statusError {
 	return &statusError{
-		code:    code,
+		status:  status,
 		message: message,
 	}
 }
 
 func (this *statusError) Error() string {
-	return fmt.Sprintf("[%d] %s", this.code, this.message)
+	return fmt.Sprintf("[%d] %s", this.status, this.message)
 }
 
 var _ error = &apiStatusError{}
@@ -29,9 +29,9 @@ type apiStatusError struct {
 	*statusError
 }
 
-func NewApiStatusError(code int, message string) *apiStatusError {
+func NewApiStatusError(status int, message string) *apiStatusError {
 	return &apiStatusError{
-		statusError: NewStatusError(code, message),
+		statusError: NewStatusError(status, message),
 	}
 }
 
