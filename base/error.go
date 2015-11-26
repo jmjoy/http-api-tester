@@ -19,6 +19,10 @@ func NewStatusError(status int, message string) *statusError {
 	}
 }
 
+func NewStatusErrorFromError(status int, err error) *statusError {
+	return NewStatusError(status, err.Error())
+}
+
 func (this *statusError) Error() string {
 	return fmt.Sprintf("[%d] %s", this.status, this.message)
 }
@@ -37,5 +41,6 @@ func NewApiStatusError(status int, message string) *apiStatusError {
 
 // System StatusError
 var (
+	ErrorNotFound         = NewStatusError(http.StatusNotFound, "404 not found")
 	ErrorMethodNotAllowed = NewStatusError(http.StatusMethodNotAllowed, "405 method not allowed")
 )

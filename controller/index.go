@@ -18,7 +18,16 @@ func NewIndexController(w http.ResponseWriter, r *http.Request) base.Restful {
 	}
 }
 
+// Get: index page
 func (this *IndexController) Get() error {
-	io.WriteString(this.W(), text.Text["view/index.html"])
+	_, err := io.WriteString(this.W(), text.Text["view/index.html"])
+	if err != nil {
+		return base.NewStatusErrorFromError(http.StatusInternalServerError, err)
+	}
+	return nil
+}
+
+// Post: submit
+func (this *IndexController) Post() error {
 	return nil
 }
