@@ -46,6 +46,9 @@ func HandleRestful(pattern string, fn controllerNewer) {
 				statusErr := err.(*statusError)
 				LogStatusError(r, statusErr)
 				http.Error(w, statusErr.message, statusErr.status)
+
+			default: // unknow
+				Log(LOG_LV_FAIL, err)
 			}
 		}
 	})
@@ -59,7 +62,7 @@ func RenderJson(w http.ResponseWriter, status int, message string, data interfac
 	}
 	buf, err := json.Marshal(out)
 	if err != nil {
-		LogError(err)
+		Log(LOG_LV_FAIL, err)
 		return
 	}
 	w.Write(buf)

@@ -31,3 +31,6 @@ tags
 
 # binary
 /http-api-tester
+
+# db
+/http-api-tester.db
