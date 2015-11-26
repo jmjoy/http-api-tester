@@ -31,6 +31,3 @@ tags
 
 # binary
 /http-api-tester
-
-# auto-create file
-/text/text.go
