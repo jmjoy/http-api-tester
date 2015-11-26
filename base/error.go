@@ -1,6 +1,7 @@
 package base
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -43,4 +44,8 @@ func NewApiStatusError(status int, message string) *apiStatusError {
 var (
 	ErrorNotFound         = NewStatusError(http.StatusNotFound, "404 not found")
 	ErrorMethodNotAllowed = NewStatusError(http.StatusMethodNotAllowed, "405 method not allowed")
+)
+
+var (
+	ErrorBucketNotFound = errors.New("Bucket not found")
 )

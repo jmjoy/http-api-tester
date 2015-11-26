@@ -21,6 +21,7 @@ func Run(cfg Config) {
 
 	router.Router()
 
+	// init db config
 	if err := base.Db(cfg.DbPath); err != nil {
 		base.Log(base.LOG_LV_FAIL, err)
 		return
