@@ -1,10 +1,6 @@
 package base
 
-import (
-	"fmt"
-
-	"github.com/boltdb/bolt"
-)
+import "github.com/boltdb/bolt"
 
 var globalDbPath string
 
@@ -35,7 +31,7 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 		if bk == nil {
 			return ErrorBucketNotFound
 		}
-		value = bk.Get([]byte(key))
+		copy(value, bk.Get([]byte(key)))
 		return nil
 	})
 
@@ -43,7 +39,6 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println(string(value), err)
 	return value, nil
 }
 

@@ -42,9 +42,9 @@ func TestBookmarkCRUD(t *testing.T) {
 	failWhenErrorNotNil(dealRespBody("GET", "http://localhost:8080/bookmark?name=test", nil, func(buf []byte) error {
 		jsonStr := string(buf)
 		t.Log(jsonStr)
-		//if jsonStr != successJsonStr {
-		//t.Fatal("insert bookmark not success")
-		//}
+		if jsonStr != successJsonStr {
+			t.Fatal()
+		}
 		return nil
 	}), t)
 }

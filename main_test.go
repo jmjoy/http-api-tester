@@ -6,13 +6,12 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	os.Remove("http-api-tester.db")
+	//os.Remove("http-api-tester.db")
 	m.Run()
 }
 
