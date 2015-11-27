@@ -65,5 +65,9 @@ func RenderJson(w http.ResponseWriter, status int, message string, data interfac
 		Log(LOG_LV_FAIL, err)
 		return
 	}
-	w.Write(buf)
+	_, err = w.Write(buf)
+	if err != nil {
+		Log(LOG_LV_FAIL, err)
+		return
+	}
 }

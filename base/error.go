@@ -40,6 +40,10 @@ func NewApiStatusError(status int, message string) *apiStatusError {
 	}
 }
 
+func NewApiStatusErrorFromError(status int, err error) *apiStatusError {
+	return NewApiStatusError(status, err.Error())
+}
+
 // System StatusError
 var (
 	ErrorNotFound         = NewStatusError(http.StatusNotFound, "404 not found")

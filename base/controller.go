@@ -26,8 +26,9 @@ func (this *Controller) R() *http.Request {
 	return this.r
 }
 
-func (this *Controller) RenderJson(data interface{}) {
+func (this *Controller) RenderJson(data interface{}) error {
 	RenderJson(this.w, 200, "", data)
+	return nil
 }
 
 func (this *Controller) MethodNotAllowed() error {

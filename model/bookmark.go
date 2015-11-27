@@ -30,10 +30,10 @@ func (this *BookmarkModel) GetCurrent() (Data, error) {
 }
 
 func (this *BookmarkModel) handleGetError(err error) (Data, error) {
-	if err != base.ErrorBucketNotFound {
-		return Data{}, err
+	if err == base.ErrorBucketNotFound {
+		return this.DefaultData(), nil
 	}
-	return this.DefaultData(), nil
+	return Data{}, err
 }
 
 func (this *BookmarkModel) DefaultData() Data {
