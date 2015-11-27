@@ -22,7 +22,7 @@ func NewIndexController(w http.ResponseWriter, r *http.Request) base.Restful {
 func (this *IndexController) Get() error {
 	_, err := io.WriteString(this.W(), text.Text["view/index.html"])
 	if err != nil {
-		return base.NewStatusErrorFromError(http.StatusInternalServerError, err)
+		return base.NewStatusError(http.StatusInternalServerError, err)
 	}
 	return nil
 }

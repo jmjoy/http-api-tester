@@ -46,7 +46,7 @@ func (this *StaticController) Get() error {
 		var err error
 		buf, err = base64.StdEncoding.DecodeString(content)
 		if err != nil {
-			return base.NewStatusErrorFromError(http.StatusInternalServerError, err)
+			return base.NewStatusError(http.StatusInternalServerError, err)
 		}
 	}
 

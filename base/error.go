@@ -13,15 +13,11 @@ type statusError struct {
 	message string
 }
 
-func NewStatusError(status int, message string) *statusError {
+func NewStatusError(status int, i interface{}) *statusError {
 	return &statusError{
 		status:  status,
-		message: message,
+		message: fmt.Sprint(i),
 	}
-}
-
-func NewStatusErrorFromError(status int, err error) *statusError {
-	return NewStatusError(status, err.Error())
 }
 
 func (this *statusError) Error() string {
@@ -34,14 +30,10 @@ type apiStatusError struct {
 	*statusError
 }
 
-func NewApiStatusError(status int, message string) *apiStatusError {
+func NewApiStatusError(status int, i interface{}) *apiStatusError {
 	return &apiStatusError{
-		statusError: NewStatusError(status, message),
+		statusError: NewStatusError(status, i),
 	}
-}
-
-func NewApiStatusErrorFromError(status int, err error) *apiStatusError {
-	return NewApiStatusError(status, err.Error())
 }
 
 // System StatusError

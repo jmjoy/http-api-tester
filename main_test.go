@@ -1,37 +1,41 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
 
-func dealRespBody(url string, fn func([]byte) error) {
-	resp, err := http.Get(url)
+func dealRespBody(method, urlStr string, bodyData interface{}, fn func([]byte) error) error {
+	var body io.Reader
+	if bodyData != nil {
+		buf, err := json.Marshal(bodyData)
+		if err != nil {
+			return err
+		}
+		body = bytes.NewBuffer(buf)
+	}
+
+	req, err := http.NewRequest(method, urlStr, body)
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
 	}
 	defer resp.Body.Close()
 
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if err = fn(buf); err != nil {
-		panic(err)
+		return err
 	}
-}
-
-func dealRespBodyJsonStruct(url string, fn func(i interface{}) error) {
-	dealRespBody(url, func(data []byte) error {
-		var i interface{}
-		if err := json.Unmarshal(data, &i); err != nil {
-			return err
-		}
-		if err := fn(i); err != nil {
-			return err
-		}
-		return nil
-	})
+	return nil
 }

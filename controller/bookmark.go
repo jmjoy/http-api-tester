@@ -24,7 +24,7 @@ func NewBookmarkController(w http.ResponseWriter, r *http.Request) base.Restful 
 func (this *BookmarkController) Get() error {
 	data, err := this.model.GetCurrent()
 	if err != nil {
-		return base.NewApiStatusErrorFromError(4000, err)
+		return base.NewApiStatusError(4000, err)
 	}
 
 	return this.RenderJson(data)

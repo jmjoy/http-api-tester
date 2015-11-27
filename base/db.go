@@ -30,7 +30,7 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 	var value []byte
 	err = db.View(func(tx *bolt.Tx) error {
 		bk := tx.Bucket([]byte(bucket))
-		if bk != nil {
+		if bk == nil {
 			return ErrorBucketNotFound
 		}
 		value = bk.Get([]byte(key))
