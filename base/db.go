@@ -1,6 +1,8 @@
 package base
 
 import (
+	"fmt"
+
 	"github.com/boltdb/bolt"
 )
 
@@ -41,6 +43,7 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 		return nil, err
 	}
 
+	fmt.Println(string(value), err)
 	return value, nil
 }
 

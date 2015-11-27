@@ -25,7 +25,16 @@ func NewBookmarkController(w http.ResponseWriter, r *http.Request) base.Restful 
 
 // Get current bookmark config
 func (this *BookmarkController) Get() error {
-	data, err := this.model.GetCurrent()
+	var data model.Data
+	var err error
+
+	name := this.R().URL.Query().Get("name")
+	if name == "" { // get current bookmark
+		data, err = this.model.GetCurrent()
+	} else {
+		data, err = this.model.Get(name)
+	}
+
 	if err != nil {
 		return base.NewApiStatusError(4000, err)
 	}
@@ -57,19 +66,16 @@ func (this *BookmarkController) Get() error {
 //}
 
 func (this *BookmarkController) Post() error {
-
-	fmt.Println("hello worljd")
-
 	// Get Body
 	buf, err := ioutil.ReadAll(this.R().Body)
 	if err != nil {
-		return base.NewApiStatusError(4000, err)
+		return base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
 	}
 
 	// 解析输入JSON
 	var bookmark model.Bookmark
 	if err = json.Unmarshal(buf, &bookmark); err != nil {
-		return base.NewApiStatusError(4000, err)
+		return base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
 	}
 
 	// 添加书签

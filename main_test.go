@@ -52,3 +52,11 @@ func dealRespBody(method, urlStr string, bodyData interface{}, fn func([]byte) e
 	}
 	return nil
 }
+
+func compactJsonStr(jsonStr string) string {
+	buffer := new(bytes.Buffer)
+	if err := json.Compact(buffer, []byte(jsonStr)); err != nil {
+		panic(err)
+	}
+	return buffer.String()
+}

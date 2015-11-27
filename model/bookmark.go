@@ -15,10 +15,23 @@ func NewBookmarkModel() *BookmarkModel {
 }
 
 func (this *BookmarkModel) Get(name string) (Data, error) {
-	bookmark, err := base.Db.Get("bookmarks", string(name))
+	fmt.Println("bookmark get:", name)
+
+	bookmark, err := base.Db.Get("bookmarks", name)
+
+	fmt.Println(string(bookmark), err)
+
 	if err != nil {
 		return this.handleGetError(err)
 	}
+
+	fmt.Println("bookmark get no error")
+
+	if bookmark == nil {
+		return this.DefaultData(), nil
+	}
+
+	fmt.Println(string(bookmark))
 
 	var data Data
 	err = json.Unmarshal(bookmark, &data)
@@ -62,7 +75,7 @@ func (this *BookmarkModel) DefaultData() Data {
 		Method: "GET",
 		Args:   []Arg{},
 		Plugin: Plugin{
-			Data: make(map[string]string),
+			Data: map[string]string{},
 		},
 	}
 }
@@ -75,5 +88,6 @@ func (this *BookmarkModel) handleGetError(err error) (Data, error) {
 }
 
 func (this *BookmarkModel) validateBookmarkName(name string) error {
-	return nil // 暂时允许所有名字
+	// TODO 暂时允许所有名字
+	return nil
 }
