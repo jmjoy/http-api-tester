@@ -6,16 +6,29 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
+	"testing"
 )
+
+func TestMain(m *testing.M) {
+	os.Remove("http-api-tester.db")
+	m.Run()
+}
 
 func dealRespBody(method, urlStr string, bodyData interface{}, fn func([]byte) error) error {
 	var body io.Reader
 	if bodyData != nil {
-		buf, err := json.Marshal(bodyData)
-		if err != nil {
-			return err
+		if str, ok := bodyData.(string); ok {
+			body = strings.NewReader(str)
+
+		} else {
+			buf, err := json.Marshal(bodyData)
+			if err != nil {
+				return err
+			}
+			body = bytes.NewBuffer(buf)
 		}
-		body = bytes.NewBuffer(buf)
 	}
 
 	req, err := http.NewRequest(method, urlStr, body)

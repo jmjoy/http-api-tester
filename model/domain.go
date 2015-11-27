@@ -1,6 +1,13 @@
 package model
 
-type Bookmark map[string]Data
+// bookmarks
+type BookmarkMap map[string]Data
+
+// named bookmark
+type Bookmark struct {
+	Name string
+	Data Data
+}
 
 // Submit Data
 type Data struct {

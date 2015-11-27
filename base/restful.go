@@ -2,6 +2,7 @@ package base
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -15,7 +16,13 @@ type Restful interface {
 type controllerNewer func(http.ResponseWriter, *http.Request) Restful
 
 func HandleRestful(pattern string, fn controllerNewer) {
+
+	fmt.Println("Regist router:", pattern)
+
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("Handle request:", r.Method, r.URL)
+
 		rf := fn(w, r)
 
 		var err error

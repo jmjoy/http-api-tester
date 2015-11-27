@@ -14,13 +14,8 @@ func NewBookmarkModel() *BookmarkModel {
 	return new(BookmarkModel)
 }
 
-func (this *BookmarkModel) GetCurrent() (Data, error) {
-	bookmarkName, err := base.Db.Get("bookmark", "selected")
-	if err != nil {
-		return this.handleGetError(err)
-	}
-
-	bookmark, err := base.Db.Get("bookmarks", string(bookmarkName))
+func (this *BookmarkModel) Get(name string) (Data, error) {
+	bookmark, err := base.Db.Get("bookmarks", string(name))
 	if err != nil {
 		return this.handleGetError(err)
 	}
@@ -30,23 +25,32 @@ func (this *BookmarkModel) GetCurrent() (Data, error) {
 	return data, err
 }
 
-func (this *BookmarkModel) Add(name string, data Data) error {
-	if err := this.validateBookmarkName(name); err != nil {
+func (this *BookmarkModel) GetCurrent() (Data, error) {
+	name, err := base.Db.Get("bookmark", "selected")
+	if err != nil {
+		return this.handleGetError(err)
+	}
+
+	return this.Get(string(name))
+}
+
+func (this *BookmarkModel) Add(bookmark Bookmark) error {
+	if err := this.validateBookmarkName(bookmark.Name); err != nil {
 		return err
 	}
 
 	// check is exists?
-	buf, _ := base.Db.Get("bookmarks", name)
+	buf, _ := base.Db.Get("bookmarks", bookmark.Name)
 	if buf != nil {
 		return fmt.Errorf("该书签名字已经存在了")
 	}
 
-	buf, err := json.Marshal(data)
+	buf, err := json.Marshal(bookmark.Data)
 	if err != nil {
 		return err
 	}
 
-	if err = base.Db.Put("bookmarks", name, buf); err != nil {
+	if err = base.Db.Put("bookmarks", bookmark.Name, buf); err != nil {
 		return err
 	}
 
@@ -57,6 +61,9 @@ func (this *BookmarkModel) DefaultData() Data {
 	return Data{
 		Method: "GET",
 		Args:   []Arg{},
+		Plugin: Plugin{
+			Data: make(map[string]string),
+		},
 	}
 }
 
