@@ -36,3 +36,10 @@ type Plugin struct {
 	Key  string
 	Data map[string]string
 }
+
+type upsertType string
+
+const (
+	UPSERT_ADD    upsertType = "ADD"
+	UPSERT_UPDATE upsertType = "UPDATE"
+)

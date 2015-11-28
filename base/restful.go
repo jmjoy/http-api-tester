@@ -16,9 +16,7 @@ type Restful interface {
 type controllerNewer func(http.ResponseWriter, *http.Request) Restful
 
 func HandleRestful(pattern string, fn controllerNewer) {
-
 	fmt.Println("Regist router:", pattern)
-
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("Handle request:", r.Method, r.URL)
@@ -63,9 +61,9 @@ func HandleRestful(pattern string, fn controllerNewer) {
 
 func RenderJson(w http.ResponseWriter, status int, message string, data interface{}) {
 	out := map[string]interface{}{
-		"status":  status,
-		"message": message,
-		"data":    data,
+		"Status":  status,
+		"Message": message,
+		"Data":    data,
 	}
 	buf, err := json.Marshal(out)
 	if err != nil {

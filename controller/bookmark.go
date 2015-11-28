@@ -23,13 +23,13 @@ func NewBookmarkController(w http.ResponseWriter, r *http.Request) base.Restful 
 	}
 }
 
-// Get current bookmark config
+// Get: get bookmark config by name or current
 func (this *BookmarkController) Get() error {
 	var data model.Data
 	var err error
 
 	name := this.R().URL.Query().Get("name")
-	if name == "" { // get current bookmark
+	if name == "" { // get current bookmark if name is empty
 		data, err = this.model.GetCurrent()
 	} else {
 		data, err = this.model.Get(name)
@@ -42,48 +42,51 @@ func (this *BookmarkController) Get() error {
 	return this.RenderJson(data)
 }
 
-//func (this *BookmarkController) Get() error {
-//    querys := this.R().URL.Query()
-//    key := querys.Get("key")
-//    if key == "" {
-//        this.RenderJson(400, "请输入书签的键", nil)
-//        return
-//    }
-
-//    jsonConfig := GetConfigJson()
-//    _, has := jsonConfig.Bookmarks[key]
-//    if !has {
-//        this.RenderJson(400, "所选书签找不到", nil)
-//        return
-//    }
-
-//    jsonConfig.Selected = key
-//    SaveConfigJson(jsonConfig)
-
-//    this.RenderJson(200, "", jsonConfig)
-
-//    return nil
-//}
-
+// Post: add bookmark config
 func (this *BookmarkController) Post() error {
+	bookmark, err := this.parseBookmarkFromBody()
+	if err != nil {
+		return err
+	}
+
+	// 添加书签
+	if err = this.model.Upsert(bookmark, model.UPSERT_ADD); err != nil {
+		return base.NewApiStatusError(4000, err)
+	}
+
+	return this.RenderJson(nil)
+}
+
+// Put: update bookmark config
+func (this *BookmarkController) Put() error {
+	bookmark, err := this.parseBookmarkFromBody()
+	if err != nil {
+		return err
+	}
+
+	// 修改书签
+	if err = this.model.Upsert(bookmark, model.UPSERT_UPDATE); err != nil {
+		return base.NewApiStatusError(4000, err)
+	}
+
+	return this.RenderJson(nil)
+}
+
+// for Post and Put: upsert data
+func (this *BookmarkController) parseBookmarkFromBody() (model.Bookmark, error) {
 	// Get Body
 	buf, err := ioutil.ReadAll(this.R().Body)
 	if err != nil {
-		return base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
+		return model.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
 	}
 
 	// 解析输入JSON
 	var bookmark model.Bookmark
 	if err = json.Unmarshal(buf, &bookmark); err != nil {
-		return base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
+		return model.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
 	}
 
-	// 添加书签
-	if err = this.model.Add(bookmark); err != nil {
-		return base.NewApiStatusError(4000, err)
-	}
-
-	return this.RenderJson(nil)
+	return bookmark, nil
 }
 
 //func (this *BookmarkController) Put() error {

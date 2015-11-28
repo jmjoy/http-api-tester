@@ -27,11 +27,11 @@ func (this *BookmarkModel) Get(name string) (Data, error) {
 
 	fmt.Println("bookmark get no error")
 
+	fmt.Println("bookmark", string(bookmark))
+
 	if bookmark == nil {
 		return this.DefaultData(), nil
 	}
-
-	fmt.Println(string(bookmark))
 
 	var data Data
 	err = json.Unmarshal(bookmark, &data)
@@ -47,15 +47,17 @@ func (this *BookmarkModel) GetCurrent() (Data, error) {
 	return this.Get(string(name))
 }
 
-func (this *BookmarkModel) Add(bookmark Bookmark) error {
+func (this *BookmarkModel) Upsert(bookmark Bookmark, typ upsertType) error {
 	if err := this.validateBookmarkName(bookmark.Name); err != nil {
 		return err
 	}
 
-	// check is exists?
-	buf, _ := base.Db.Get("bookmarks", bookmark.Name)
-	if buf != nil {
-		return fmt.Errorf("该书签名字已经存在了")
+	// check is exists? when add
+	if typ == UPSERT_ADD {
+		buf, _ := base.Db.Get("bookmarks", bookmark.Name)
+		if buf != nil {
+			return fmt.Errorf("该书签名字已经存在了")
+		}
 	}
 
 	buf, err := json.Marshal(bookmark.Data)

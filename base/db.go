@@ -31,7 +31,13 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 		if bk == nil {
 			return ErrorBucketNotFound
 		}
-		copy(value, bk.Get([]byte(key)))
+		buf := bk.Get([]byte(key))
+		if buf == nil {
+			return nil
+		}
+		value = make([]byte, len(buf))
+		copy(value, buf)
+
 		return nil
 	})
 
