@@ -37,6 +37,16 @@ type Plugin struct {
 	Data map[string]string
 }
 
+func DataDefault() Data {
+	return Data{
+		Method: "GET",
+		Args:   []Arg{},
+		Plugin: Plugin{
+			Data: map[string]string{},
+		},
+	}
+}
+
 type upsertType string
 
 const (

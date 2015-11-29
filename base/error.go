@@ -43,5 +43,6 @@ var (
 )
 
 var (
-	ErrorBucketNotFound = errors.New("Bucket not found")
+	ErrorBucketNotFound   = errors.New("Bucket not found")
+	ErrorBookmarkNotFound = errors.New("该书签不存在")
 )

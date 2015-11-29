@@ -10,4 +10,5 @@ func Router() {
 	base.HandleRestful("/favicon.ico", controller.NewFaviconController)
 	base.HandleRestful("/static/", controller.NewStaticController)
 	base.HandleRestful("/bookmark", controller.NewBookmarkController)
+	base.HandleRestful("/bookmarks", controller.NewBookmarksController)
 }
