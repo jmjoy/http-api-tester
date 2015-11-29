@@ -1,6 +1,9 @@
 package bean
 
-import "errors"
+import (
+	"errors"
+	"net/url"
+)
 
 // bookmarks
 type BookmarkMap map[string]Data
@@ -49,6 +52,35 @@ func DataDefault() Data {
 	}
 }
 
+func (this Data) Validate() error {
+	if this.Url == "" {
+		return errors.New("请指定URL")
+	}
+
+	u, err := url.Parse(this.Url)
+	if err != nil {
+		return err
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return errors.New("未知协议：" + u.Scheme)
+	}
+
+	if u.Host == "" {
+		return errors.New("请指定host")
+	}
+
+	for _, arg := range this.Args {
+		switch arg.Method {
+		case "GET", "POST":
+		default:
+			return errors.New("参数中包含未知请求方式: " + arg.Method)
+		}
+	}
+
+	return nil
+}
+
 type Response struct {
 	Status int
 	Url    string
@@ -59,7 +91,7 @@ type Response struct {
 
 type pluginHandler func(Data) (Data, error)
 
-var pluginHandlers map[string]pluginHandler
+var pluginHandlers = make(map[string]pluginHandler)
 
 func RegisterPluginHandler(name string, handler pluginHandler) error {
 	if _, has := pluginHandlers[name]; has {
@@ -72,13 +104,11 @@ func RegisterPluginHandler(name string, handler pluginHandler) error {
 	return nil
 }
 
-func GetPluginHandler(name string) pluginHandler {
-	handler, has := pluginHandlers[name]
+func HookPlugin(data Data) (Data, error) {
+	handler, has := pluginHandlers[data.Plugin.Key]
 	if !has {
 		// if not exists, return default handler
-		return func(data Data) (Data, error) {
-			return data, nil
-		}
+		return data, nil
 	}
-	return handler
+	return handler(data)
 }
