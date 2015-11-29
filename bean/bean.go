@@ -82,11 +82,11 @@ func (this Data) Validate() error {
 }
 
 type Response struct {
-	Status int
-	Url    string
-	Body   string
-	Test   string
-	Bm     string
+	ReqUrl  string
+	ReqBody string
+	Status  string
+	Test    string
+	Bm      string
 }
 
 type pluginHandler func(Data) (Data, error)
