@@ -89,26 +89,47 @@ type Response struct {
 	Bm      string
 }
 
+var pluginHandlers = make(map[string]PluginInfo)
+
 type pluginHandler func(Data) (Data, error)
 
-var pluginHandlers = make(map[string]pluginHandler)
+type PluginInfo struct {
+	DisplayName string
+	FieldNames  map[string]string
+	Handler     pluginHandler
+}
 
-func RegisterPluginHandler(name string, handler pluginHandler) error {
+func (this PluginInfo) IsNull() bool {
+	return this.DisplayName == "" || this.FieldNames == nil || this.Handler == nil
+}
+
+func RegisterPluginHandler(name string, info PluginInfo) error {
 	if _, has := pluginHandlers[name]; has {
 		return errors.New("plugin has existed, CAN'T register again")
 	}
-	if handler == nil {
-		return errors.New("handler CAN'T be nil")
+	if info.IsNull() {
+		return errors.New("handler CAN'T be NULL")
 	}
-	pluginHandlers[name] = handler
+	pluginHandlers[name] = info
 	return nil
 }
 
 func HookPlugin(data Data) (Data, error) {
-	handler, has := pluginHandlers[data.Plugin.Key]
+	plugin, has := pluginHandlers[data.Plugin.Key]
 	if !has {
 		// if not exists, return default handler
 		return data, nil
 	}
-	return handler(data)
+	return plugin.Handler(data)
+}
+
+func init() {
+	// default plugin: not use!
+	RegisterPluginHandler("", PluginInfo{
+		DisplayName: "不使用插件",
+		FieldNames:  map[string]string{},
+		Handler: func(data Data) (Data, error) {
+			return data, nil
+		},
+	})
 }
