@@ -1,6 +1,9 @@
 package model
 
-import "github.com/jmjoy/http-api-tester/base"
+import (
+	"github.com/jmjoy/http-api-tester/base"
+	"github.com/jmjoy/http-api-tester/bean"
+)
 
 type BookmarkModel struct {
 }
@@ -9,7 +12,7 @@ func NewBookmarkModel() *BookmarkModel {
 	return new(BookmarkModel)
 }
 
-func (this *BookmarkModel) GetCurrent() (Data, error) {
+func (this *BookmarkModel) GetCurrent() (bean.Data, error) {
 	name, err := base.Db.Get("bookmark", "selected")
 	if err != nil {
 		return this.handleGetError(err)
@@ -37,9 +40,9 @@ func (this *BookmarkModel) SetCurrent(name string) error {
 	return nil
 }
 
-func (this *BookmarkModel) handleGetError(err error) (Data, error) {
+func (this *BookmarkModel) handleGetError(err error) (bean.Data, error) {
 	if err == base.ErrorBucketNotFound || err == base.ErrorBookmarkNotFound {
-		return DataDefault(), nil
+		return bean.DataDefault(), nil
 	}
-	return Data{}, err
+	return bean.Data{}, err
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/jmjoy/http-api-tester/base"
+	"github.com/jmjoy/http-api-tester/bean"
 	"github.com/jmjoy/http-api-tester/model"
 )
 
@@ -75,17 +76,17 @@ func (this *BookmarksController) Delete() error {
 }
 
 // for Post and Put: upsert data
-func (this *BookmarksController) parseBookmarkFromBody() (model.Bookmark, error) {
+func (this *BookmarksController) parseBookmarkFromBody() (bean.Bookmark, error) {
 	// Get Body
 	buf, err := ioutil.ReadAll(this.R().Body)
 	if err != nil {
-		return model.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
+		return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
 	}
 
 	// 解析输入JSON
-	var bookmark model.Bookmark
+	var bookmark bean.Bookmark
 	if err = json.Unmarshal(buf, &bookmark); err != nil {
-		return model.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
+		return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
 	}
 
 	return bookmark, nil

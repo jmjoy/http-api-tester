@@ -1,4 +1,4 @@
-package model
+package bean
 
 import "errors"
 
@@ -57,13 +57,6 @@ type Response struct {
 	Bm     string
 }
 
-type upsertType string
-
-const (
-	UPSERT_ADD    upsertType = "ADD"
-	UPSERT_UPDATE upsertType = "UPDATE"
-)
-
 type pluginHandler func(Data) (Data, error)
 
 var pluginHandlers map[string]pluginHandler
@@ -77,4 +70,15 @@ func RegisterPluginHandler(name string, handler pluginHandler) error {
 	}
 	pluginHandlers[name] = handler
 	return nil
+}
+
+func GetPluginHandler(name string) pluginHandler {
+	handler, has := pluginHandlers[name]
+	if !has {
+		// if not exists, return default handler
+		return func(data Data) (Data, error) {
+			return data, nil
+		}
+	}
+	return handler
 }

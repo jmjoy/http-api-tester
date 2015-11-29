@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jmjoy/http-api-tester/base"
+	"github.com/jmjoy/http-api-tester/bean"
 )
 
 type BookmarksModel struct {
@@ -14,9 +15,9 @@ func NewBookmarksModel() *BookmarksModel {
 	return new(BookmarksModel)
 }
 
-func (this *BookmarksModel) Get(name string) (Data, error) {
+func (this *BookmarksModel) Get(name string) (bean.Data, error) {
 	if err := this.validateBookmarkName(name); err != nil {
-		return Data{}, err
+		return bean.Data{}, err
 	}
 
 	bookmark, err := base.Db.Get("bookmarks", name)
@@ -24,7 +25,7 @@ func (this *BookmarksModel) Get(name string) (Data, error) {
 	fmt.Println(string(bookmark), err)
 
 	if err != nil {
-		return Data{}, err
+		return bean.Data{}, err
 	}
 
 	fmt.Println("bookmark get no error")
@@ -32,15 +33,15 @@ func (this *BookmarksModel) Get(name string) (Data, error) {
 	fmt.Println("bookmark", string(bookmark))
 
 	if bookmark == nil {
-		return Data{}, base.ErrorBookmarkNotFound
+		return bean.Data{}, base.ErrorBookmarkNotFound
 	}
 
-	var data Data
+	var data bean.Data
 	err = json.Unmarshal(bookmark, &data)
 	return data, err
 }
 
-func (this *BookmarksModel) Upsert(bookmark Bookmark, typ upsertType) error {
+func (this *BookmarksModel) Upsert(bookmark bean.Bookmark, typ UpsertType) error {
 	if err := this.validateBookmarkName(bookmark.Name); err != nil {
 		return err
 	}
