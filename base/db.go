@@ -83,7 +83,7 @@ func (this dbHelper) Delete(bucket string, key string) error {
 
 	err = db.Update(func(tx *bolt.Tx) error {
 		bk := tx.Bucket([]byte(bucket))
-		if bk != nil {
+		if bk == nil {
 			return ErrorBucketNotFound
 		}
 		err = bk.Delete([]byte(key))

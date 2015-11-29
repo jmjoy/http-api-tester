@@ -61,7 +61,7 @@ func (this *BookmarkController) Post() error {
 func (this *BookmarkController) Put() error {
 	bookmark, err := this.parseBookmarkFromBody()
 	if err != nil {
-		return err
+		return base.NewApiStatusError(4000, err)
 	}
 
 	// 修改书签
@@ -69,6 +69,15 @@ func (this *BookmarkController) Put() error {
 		return base.NewApiStatusError(4000, err)
 	}
 
+	return this.RenderJson(nil)
+}
+
+// Delete: delete bookmark
+func (this *BookmarkController) Delete() error {
+	name := this.R().URL.Query().Get("name")
+	if err := this.model.Delete(name); err != nil {
+		return base.NewApiStatusError(4000, err)
+	}
 	return this.RenderJson(nil)
 }
 

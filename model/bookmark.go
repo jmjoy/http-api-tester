@@ -15,7 +15,9 @@ func NewBookmarkModel() *BookmarkModel {
 }
 
 func (this *BookmarkModel) Get(name string) (Data, error) {
-	fmt.Println("bookmark get:", name)
+	if err := this.validateBookmarkName(name); err != nil {
+		return Data{}, err
+	}
 
 	bookmark, err := base.Db.Get("bookmarks", name)
 
@@ -66,6 +68,18 @@ func (this *BookmarkModel) Upsert(bookmark Bookmark, typ upsertType) error {
 	}
 
 	if err = base.Db.Put("bookmarks", bookmark.Name, buf); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (this *BookmarkModel) Delete(name string) error {
+	if err := this.validateBookmarkName(name); err != nil {
+		return err
+	}
+
+	if err := base.Db.Delete("bookmarks", name); err != nil {
 		return err
 	}
 
