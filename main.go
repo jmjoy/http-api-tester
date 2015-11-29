@@ -12,17 +12,13 @@ const (
 )
 
 var (
-	gPort       string
-	gConfigPath string
-	gViewDir    string
-	gStaticDir  string
+	gPort   string
+	gDbPath string
 )
 
 func init() {
 	flag.StringVar(&gPort, "p", "8080", "服务器运行端口")
-	flag.StringVar(&gConfigPath, "config", "config.json", "JSON配置文件路径")
-	flag.StringVar(&gViewDir, "view", "view", "视图文件所在文件夹")
-	flag.StringVar(&gStaticDir, "static", "static", "静态文件所在文件夹")
+	flag.StringVar(&gDbPath, "db", "http-api-tester.db", "数据库路径")
 }
 
 func main() {
@@ -30,6 +26,6 @@ func main() {
 
 	app.Run(app.Config{
 		Port:   gPort,
-		DbPath: "http-api-tester.db",
+		DbPath: gDbPath,
 	})
 }

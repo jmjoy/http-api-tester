@@ -1,5 +1,7 @@
 package model
 
+import "errors"
+
 // bookmarks
 type BookmarkMap map[string]Data
 
@@ -47,9 +49,32 @@ func DataDefault() Data {
 	}
 }
 
+type Response struct {
+	Status int
+	Url    string
+	Body   string
+	Test   string
+	Bm     string
+}
+
 type upsertType string
 
 const (
 	UPSERT_ADD    upsertType = "ADD"
 	UPSERT_UPDATE upsertType = "UPDATE"
 )
+
+type pluginHandler func(Data) (Data, error)
+
+var pluginHandlers map[string]pluginHandler
+
+func RegisterPluginHandler(name string, handler pluginHandler) error {
+	if _, has := pluginHandlers[name]; has {
+		return errors.New("plugin has existed, CAN'T register again")
+	}
+	if handler == nil {
+		return errors.New("handler CAN'T be nil")
+	}
+	pluginHandlers[name] = handler
+	return nil
+}
