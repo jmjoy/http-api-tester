@@ -16,6 +16,7 @@ import (
 
 func TestMain(m *testing.M) {
 	os.Remove("http-api-tester.db")
+	// TODO adjust architecture to fit TEST
 	m.Run()
 }
 

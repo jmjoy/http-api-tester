@@ -37,7 +37,7 @@ func (this *SubmitModel) Submit(data bean.Data) (bean.Response, error) {
 		return bean.Response{}, err
 	}
 
-	if err = this.submitBenckmark(req, &response); err != nil {
+	if err = this.submitBenckmark(req, data.Bm, &response); err != nil {
 		return bean.Response{}, err
 	}
 
@@ -93,6 +93,28 @@ func (this *SubmitModel) submitTest(req *http.Request, response *bean.Response) 
 	return nil
 }
 
-func (this *SubmitModel) submitBenckmark(req *http.Request, response *bean.Response) error {
+func (this *SubmitModel) submitBenckmark(req *http.Request, bm bean.Bm, response *bean.Response) error {
+	if !bm.Switch {
+		return nil
+	}
+
+	//reqBodyBuf, err := ioutil.ReadAll(req.Body)
+	//if err != nil {
+	//    return err
+	//}
+	//(&boomer.Boomer{
+	//    Request:            req,
+	//    RequestBody:        string(reqBodyBuf),
+	//    N:                  ,
+	//    C:                  conc,
+	//    Qps:                q,
+	//    Timeout:            *t,
+	//    AllowInsecure:      *insecure,
+	//    DisableCompression: *disableCompression,
+	//    DisableKeepAlives:  *disableKeepAlives,
+	//    ProxyAddr:          proxyURL,
+	//    Output:             *output,
+	//    ReadAll:            *readAll,
+	//}).Run()
 	return nil
 }

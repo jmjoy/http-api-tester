@@ -85,8 +85,10 @@ func (this *BookmarksController) parseBookmarkFromBody() (bean.Bookmark, error) 
 
 	// 解析输入JSON
 	var bookmark bean.Bookmark
-	if err = json.Unmarshal(buf, &bookmark); err != nil {
-		return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
+	if len(buf) != 0 {
+		if err = json.Unmarshal(buf, &bookmark); err != nil {
+			return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
+		}
 	}
 
 	return bookmark, nil
