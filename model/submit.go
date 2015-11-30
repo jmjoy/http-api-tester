@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/jmjoy/http-api-tester/bean"
+
+	"github.com/jmjoy/boom/boomer"
 )
 
 type SubmitModel struct {
@@ -98,23 +100,33 @@ func (this *SubmitModel) submitBenckmark(req *http.Request, bm bean.Bm, response
 		return nil
 	}
 
-	//reqBodyBuf, err := ioutil.ReadAll(req.Body)
-	//if err != nil {
-	//    return err
-	//}
-	//(&boomer.Boomer{
-	//    Request:            req,
-	//    RequestBody:        string(reqBodyBuf),
-	//    N:                  ,
-	//    C:                  conc,
-	//    Qps:                q,
-	//    Timeout:            *t,
-	//    AllowInsecure:      *insecure,
-	//    DisableCompression: *disableCompression,
-	//    DisableKeepAlives:  *disableKeepAlives,
-	//    ProxyAddr:          proxyURL,
-	//    Output:             *output,
-	//    ReadAll:            *readAll,
-	//}).Run()
+	bodyBuf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return err
+	}
+
+	// limit N, C reduce server pressure.
+	var n, c uint
+	if bm.N >= 1000 {
+		n = 1000
+	} else {
+		n = bm.N
+	}
+	if bm.C >= 500 {
+		c = 1000
+	} else {
+		n = bm.C
+	}
+
+	text := (&boomer.Boomer{
+		Request:     req,
+		RequestBody: string(bodyBuf),
+		N:           int(n),
+		C:           int(c),
+		Timeout:     35,
+	}).Run()
+
+	response.Bm = text
+
 	return nil
 }
