@@ -23,13 +23,34 @@ func NewIndexController(w http.ResponseWriter, r *http.Request) base.Restful {
 	}
 }
 
-// Get: index page
+// Get:
 func (this *IndexController) Get() error {
+	act := this.R().URL.Query().Get("act")
+	if act == "initData" {
+		return this.initData()
+	}
+	return this.indexPage()
+}
+
+func (this *IndexController) indexPage() error {
 	_, err := io.WriteString(this.W(), text.Text["view/index.html"])
 	if err != nil {
 		return base.NewStatusError(http.StatusInternalServerError, err)
 	}
 	return nil
+}
+
+func (this *IndexController) initData() error {
+	data, err := model.NewBookmarkModel().GetCurrent()
+	if err != nil {
+		return base.NewApiStatusError(4000, err)
+	}
+
+	renderData := map[string]interface{}{
+		"Data":    data,
+		"Plugins": bean.PluginPool,
+	}
+	return this.RenderJson(renderData)
 }
 
 // Post: submit

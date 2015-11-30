@@ -1,3 +1,7 @@
+var g = {
+    "initDataUrl": "/?act=initData",
+};
+
 var gData = null;
 var gOptionTpl = null;
 var gConfirmDialogSubmitBtnAction = "";
@@ -8,6 +12,11 @@ $(function() {
     // style
     $('.switch[type="checkbox"]').bootstrapSwitch();
     $('.selectpicker').selectpicker();
+
+    // 【回调地狱】获取初始化数据
+    $.get(g.initDataUrl, {}, function(data) {
+
+    }, "json");
 
     // btnclick
     gOptionTpl = returnArgOptionTpl();
@@ -23,7 +32,7 @@ $(function() {
     $("#submit_btn").click(handleSubmit);
 
     // render data
-    gData = returnConfigData();
+    gData = getInitData();
     gPluginKey = gData.bookmarks[gData.selected].plugin.key;
     renderData(gData);
 });
@@ -268,12 +277,6 @@ function renderBookmarkOptions(data) {
     $("#bookmark").html(html);
     $("#bookmark").selectpicker('val', data.selected);
     $('#bookmark').selectpicker("refresh");
-}
-
-function returnConfigData() {
-    var text = $("#config_json").html();
-    var json = $.parseJSON(text);
-    return json;
 }
 
 function bookmarkEdit() {

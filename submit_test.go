@@ -37,8 +37,8 @@ var submitData = `{
 
 func TestSubmit(t *testing.T) {
 	// submit without plugn
-	//dealRespBody("POST", "http://localhost:8080", insertData, func(jsonStr string) error {
-	//    t.Log(jsonStr)
-	//    return nil
-	//}, t)
+	dealRespBody("GET", "http://localhost:8080?act=initData", nil, func(jsonStr string) error {
+		t.Log(jsonStr)
+		return nil
+	}, t)
 }
