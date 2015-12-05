@@ -53,7 +53,7 @@ func init() {
 		argsM := make(map[string]string)
 		query := reqS.URL.Query()
 
-		for key, args := range query {
+		for key, args := range reqS.QueryData {
 			argsM[key] = args[0]
 		}
 
