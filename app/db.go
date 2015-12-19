@@ -4,24 +4,27 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-var globalDbPath string
-
-type dbHelper func(string) error
-
 // Db is a single instance of dbHelper
-var Db dbHelper = func(dbPath string) error {
+var Db *dbHelper
+
+type dbHelper struct {
+	dbPath string
+}
+
+func initDb(dbPath string) error {
+	// check can open?
 	db, err := bolt.Open(dbPath, 0600, nil)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
-	globalDbPath = dbPath
+	Db = &dbHelper{dbPath: dbPath}
 	return nil
 }
 
-func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
-	db, err := bolt.Open(globalDbPath, 0600, nil)
+func (this *dbHelper) Get(bucket string, key string) ([]byte, error) {
+	db, err := bolt.Open(this.dbPath, 0600, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +53,8 @@ func (this dbHelper) Get(bucket string, key string) ([]byte, error) {
 	return value, nil
 }
 
-func (this dbHelper) Put(bucket string, key string, value []byte) error {
-	db, err := bolt.Open(globalDbPath, 0600, nil)
+func (this *dbHelper) Put(bucket string, key string, value []byte) error {
+	db, err := bolt.Open(this.dbPath, 0600, nil)
 	if err != nil {
 		return err
 	}
@@ -76,8 +79,8 @@ func (this dbHelper) Put(bucket string, key string, value []byte) error {
 	return nil
 }
 
-func (this dbHelper) Delete(bucket string, key string) error {
-	db, err := bolt.Open(globalDbPath, 0600, nil)
+func (this *dbHelper) Delete(bucket string, key string) error {
+	db, err := bolt.Open(this.dbPath, 0600, nil)
 	if err != nil {
 		return err
 	}
