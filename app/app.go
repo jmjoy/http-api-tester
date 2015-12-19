@@ -3,30 +3,31 @@ package app
 import (
 	"net/http"
 	"strings"
-
-	"github.com/jmjoy/http-api-tester/base"
-	"github.com/jmjoy/http-api-tester/router"
 )
 
+// Config is a struct named Config
 type Config struct {
+	// User defined
 	Port   string
 	DbPath string
+
+	// App need
+	Routers []map[string]IController
 }
 
+// Run is a function named Run
 func Run(cfg Config) {
 	port := cfg.Port
 	if !strings.ContainsRune(port, ':') {
 		port = "localhost:" + port
 	}
 
-	router.Router()
-
 	// init db config
 	if err := base.Db(cfg.DbPath); err != nil {
-		base.Log(base.LOG_LV_FAIL, err)
+		Log(base.LOG_LV_FAIL, err)
 		return
 	}
 
-	base.Log(base.LOG_LV_INFO, "测试接口服务器在跑了，请访问 http://"+port)
-	base.Log(base.LOG_LV_FAIL, http.ListenAndServe(port, nil))
+	Log(base.LOG_LV_INFO, "测试接口服务器在跑了，请访问 http://"+port)
+	Log(base.LOG_LV_FAIL, http.ListenAndServe(port, nil))
 }

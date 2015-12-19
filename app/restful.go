@@ -1,4 +1,4 @@
-package base
+package app
 
 import (
 	"encoding/json"
@@ -57,22 +57,4 @@ func HandleRestful(pattern string, fn controllerNewer) {
 			}
 		}
 	})
-}
-
-func RenderJson(w http.ResponseWriter, status int, message string, data interface{}) {
-	out := map[string]interface{}{
-		"Status":  status,
-		"Message": message,
-		"Data":    data,
-	}
-	buf, err := json.Marshal(out)
-	if err != nil {
-		Log(LOG_LV_FAIL, err)
-		return
-	}
-	_, err = w.Write(buf)
-	if err != nil {
-		Log(LOG_LV_FAIL, err)
-		return
-	}
 }

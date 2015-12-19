@@ -1,4 +1,4 @@
-package base
+package app
 
 type Model struct {
 	db     dbHelper
