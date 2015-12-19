@@ -1,8 +1,6 @@
 package app
 
-import (
-	"net/http"
-)
+import "net/http"
 
 // IController is a interface named IController
 type IController interface {
@@ -34,20 +32,7 @@ func (this *Controller) SetW(w http.ResponseWriter) {
 }
 
 func (this *Controller) JsonRender(status int, message string, data interface{}) error {
-	out := map[string]interface{}{
-		"Status":  status,
-		"Message": message,
-		"Data":    data,
-	}
-	buf, err := json.Marshal(out)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(buf)
-	if err != nil {
-		return err
-	}
-	return nil
+	return jsonRender(this.W, status, message, data)
 }
 
 func (this *Controller) JsonSuccess(data interface{}) error {

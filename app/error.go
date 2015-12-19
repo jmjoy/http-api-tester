@@ -3,13 +3,17 @@ package app
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"strconv"
 )
 
 type IStatusError interface {
+	error
 	IamStatusError()
 }
 
 type IApiStatusError interface {
+	error
 	IamApiStatusError()
 }
 
@@ -52,3 +56,27 @@ var (
 	ErrorBucketNotFound   = errors.New("Bucket not found")
 	ErrorBookmarkNotFound = errors.New("该书签不存在")
 )
+
+func errorGetStatus(err error) int {
+	field, has := reflect.TypeOf(err).FieldByName("Status")
+	if !has {
+		return 0
+	}
+	status, _ := strconv.Atoi(field.Tag.Get("apiError"))
+	return status
+}
+
+func errorGetMessage(err error) string {
+	name := "Message"
+
+	v := reflect.ValueOf(err)
+	valueField := v.FieldByName(name)
+	if i := valueField.Interface(); i != nil && i != "" {
+		return i.(string)
+	}
+	field, has := v.Type().FieldByName(name)
+	if !has {
+		return ""
+	}
+	return field.Tag.Get("apiError")
+}

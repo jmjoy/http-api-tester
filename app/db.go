@@ -1,6 +1,8 @@
 package app
 
-import "github.com/boltdb/bolt"
+import (
+	"github.com/boltdb/bolt"
+)
 
 var globalDbPath string
 

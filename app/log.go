@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/ttacon/chalk"
 )
@@ -10,7 +9,7 @@ import (
 type LogLevel int
 
 const (
-	LOG_LV_SUCC = iota
+	LOG_LV_SUCC LogLevel = iota
 	LOG_LV_INFO
 	LOG_LV_FAIL
 )
@@ -38,9 +37,4 @@ func Log(lv LogLevel, e interface{}) {
 
 	message := color.Color(fmt.Sprintf("[%s] %s", tip, e))
 	fmt.Println(message)
-}
-
-func LogStatusError(r *http.Request, err *statusError) {
-	message := fmt.Sprintf("<%d> %s (%s)", err.status, err.message, r.URL)
-	Log(LOG_LV_FAIL, message)
 }
