@@ -10,7 +10,7 @@ import (
 
 var testData = Data{}
 
-func TestCRUD(t *testing.T) {
+func TestBookmarksCRUD(t *testing.T) {
 	testkey := "test"
 
 	_, err := BookmarksModel.Get(testkey)
