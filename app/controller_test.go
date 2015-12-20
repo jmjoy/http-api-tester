@@ -19,7 +19,8 @@ func TestController(t *testing.T) {
 	t.Logf("%#v", c0)
 
 	c := new(MyController)
-	c.Controller.Reset(nil, req)
+	reflect.ValueOf(c).Elem().FieldByName("Controller").Set(reflect.ValueOf(&Controller{R: req}))
+	// c.Controller.Reset(nil, req)
 	t.Logf("%#v", c)
 
 	if !reflect.DeepEqual(c0, c) {

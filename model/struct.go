@@ -48,6 +48,10 @@ func DataDefault() Data {
 	return Data{
 		Method: "GET",
 		Args:   []Arg{},
+		Bm: Bm{
+			N: 100,
+			C: 10,
+		},
 		Plugin: Plugin{
 			Data: map[string]string{},
 		},

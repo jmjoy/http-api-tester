@@ -29,14 +29,14 @@ func (this *IndexController) indexPage() (err error) {
 }
 
 func (this *IndexController) initData() (err error) {
-	data, err := model.BookmarkModel.GetCurrent()
+	bookmark, err := model.BookmarkModel.GetCurrent()
 	if err != nil {
 		return
 	}
 
 	return this.JsonSuccess(map[string]interface{}{
-		"Data":    data,
-		"Plugins": model.PluginPool(),
+		"Bookmark": bookmark,
+		"Plugins":  model.PluginPool(),
 	})
 }
 

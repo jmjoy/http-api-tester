@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"github.com/jmjoy/http-api-tester/app"
+	_ "github.com/jmjoy/http-api-tester/plugin"
 	"github.com/jmjoy/http-api-tester/router"
 	"github.com/jmjoy/http-api-tester/text"
 )

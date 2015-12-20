@@ -10,11 +10,11 @@ import (
 func TestBookmarkCRUD(t *testing.T) {
 	testkey := "testBookmark"
 
-	data, err := BookmarkModel.GetCurrent()
+	bookmark, err := BookmarkModel.GetCurrent()
 	if err != nil {
 		panic(err)
 	}
-	if !reflect.DeepEqual(data, DataDefault()) {
+	if !reflect.DeepEqual(bookmark.Data, DataDefault()) || bookmark.Name != "default" {
 		t.Fatal("not euqal?")
 	}
 
@@ -36,12 +36,12 @@ func TestBookmarkCRUD(t *testing.T) {
 		panic(err)
 	}
 
-	data, err = BookmarkModel.GetCurrent()
+	bookmark, err = BookmarkModel.GetCurrent()
 	if err != nil {
 		panic(err)
 	}
 
-	if !reflect.DeepEqual(data, DataDefault()) {
+	if !reflect.DeepEqual(bookmark.Data, DataDefault()) || bookmark.Name != testkey {
 		t.Fatal("not equal?")
 	}
 }

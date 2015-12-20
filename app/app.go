@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -15,7 +16,7 @@ type Config struct {
 	DbPath string
 
 	// App need
-	Routers map[string]IController
+	Routers map[string]func() IController
 }
 
 // Run is a function named Run
@@ -32,8 +33,8 @@ func Run(cfg Config) {
 	}
 
 	// register restful router
-	for pattren, controller := range cfg.Routers {
-		HandleRestful(pattren, controller)
+	for pattren, fn := range cfg.Routers {
+		HandleRestful(pattren, fn)
 	}
 
 	Log(LOG_LV_INFO, "测试接口服务器在跑了，请访问 http://"+port)
@@ -42,12 +43,14 @@ func Run(cfg Config) {
 
 var controllerPoolMap = make(map[string]*sync.Pool)
 
-func HandleRestful(pattern string, c IController) {
+func HandleRestful(pattern string, fn func() IController) {
 	controllerPoolMap[pattern] = &sync.Pool{
+		// New: func() interface{} {
+		// TODO Find why can't new a substruct
+		// return reflect.New(reflect.TypeOf(c)).Elem().Interface()
+		// },
 		New: func() interface{} {
-			// TODO Find why can't new a substruct
-			// return reflect.New(reflect.TypeOf(c)).Elem().Interface()
-			return c
+			return fn()
 		},
 	}
 
@@ -56,7 +59,10 @@ func HandleRestful(pattern string, c IController) {
 		defer controllerPoolMap[pattern].Put(c)
 
 		// ResetController(c, w, r)
-		c.Reset(w, r)
+		// TODO Here alway new a Controller
+		reflect.ValueOf(c).Elem().FieldByName("Controller").
+			Set(reflect.ValueOf(&Controller{R: r, W: w}))
+		// c.Reset(w, r)
 
 		var err error
 		switch r.Method {

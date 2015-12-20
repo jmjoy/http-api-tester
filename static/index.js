@@ -1,22 +1,106 @@
-var g = {
-    "initDataUrl": "/?act=initData",
-};
-
 var gData = null;
 var gOptionTpl = null;
 var gConfirmDialogSubmitBtnAction = "";
 var gPluginKey = "";
 var gResultTest = "";
 
+var configs = {
+    "initDataUrl": "/?act=initData"
+};
+
+var utils = {
+    "tplCompile": function(id) {
+        var html = $("#" + id).html();
+        return Handlebars.compile(html);
+    }
+};
+
+var templates = {
+    "args": utils.tplCompile("args_tpl")
+};
+
+var page = {
+    "renderBookmark": function(bookmark) {
+        var data = bookmark.Data;
+
+        $('#method').bootstrapSwitch('state', data.Method=="GET");
+        $('#url').val(data.Url);
+
+        this.renderArgs(data.Args, true);
+
+        $('#bm_switch').bootstrapSwitch('state', data.Bm.Switch);
+        $('#bm_n').val(data.Bm.N);
+        $('#bm_c').val(data.Bm.C);
+    },
+
+    "renderPlugins": function(plugins) {
+    },
+
+    "renderArgs": function(args, isReset) {
+        var html = templates.args({"Args": args});
+        if (isReset) {
+            return $("#args_body").html(html);
+        }
+        return $("#args_body").append(html);
+    },
+
+    "reflesh": function() {
+        $('.switch[type="checkbox"]').bootstrapSwitch();
+        $('.selectpicker').selectpicker();
+    },
+
+    "message": function (msg) {
+        $("#alerter_content").html(msg);
+        $("#alerter").modal('show');
+    }
+};
+
+var args = {
+    "add": function() {
+        page.renderArgs([{
+            "Key":    "",
+            "Value":  "",
+            "Method": "GET"
+        }], false);
+
+        page.reflesh();
+    }
+};
+
+// window.onload
 $(function() {
-    // style
-    $('.switch[type="checkbox"]').bootstrapSwitch();
-    $('.selectpicker').selectpicker();
+    // init libaray
+    Handlebars.registerHelper('eq', function(v1, v2, options) {
+        if(v1 == v2) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
+    // set style
+    page.reflesh();
 
     // 【回调地狱】获取初始化数据
-    $.get(g.initDataUrl, {}, function(data) {
+    $.ajax(configs.initDataUrl, {
+        "type": "GET",
+        // "async": false,
+        "dataType": "json",
+        "success": function(respData, textStatus, jqXHR) {
+            if (respData.Status != 200) {
+                page.message(respData.Message);
+                throw "init error";
+            }
 
-    }, "json");
+            console.log(respData);
+            page.renderBookmark(respData.Data.Bookmark);
+        },
+        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+            page.message("Request error: " + textStatus);
+            throw "init error";
+        }
+    });
+
+    return;
 
     // btnclick
     gOptionTpl = returnArgOptionTpl();
@@ -25,9 +109,9 @@ $(function() {
     $("#bookmark_add_btn").click(bookmarkAdd);
     $("#bookmark_edit_btn").click(bookmarkEdit);
     $("#bookmark_drop_btn").click(bookmarkDrop);
-    $("#bookamrkAddBtn").click(handleBookamrkAdd)
+    $("#bookamrkAddBtn").click(handleBookamrkAdd);
     $("#bookmark_add_input").focus(hiddenErrAlert);
-    $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn)
+    $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn);
     $("#plugin_use_btn").click(pluginUse);
     $("#submit_btn").click(handleSubmit);
 

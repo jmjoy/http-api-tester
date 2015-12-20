@@ -7,19 +7,19 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/jmjoy/http-api-tester/bean"
+	"github.com/jmjoy/http-api-tester/model"
 )
 
 func init() {
-	handler := func(data bean.Data) (bean.Data, error) {
+	handler := func(data model.Data) (model.Data, error) {
 		keyName, has := data.Plugin.Data["keyName"]
 		if !has {
-			return bean.Data{}, errors.New("md5 signature key name DOESN't exist!")
+			return model.Data{}, errors.New("md5 signature key name DOESN't exist!")
 		}
 
 		password, has := data.Plugin.Data["password"]
 		if !has {
-			return bean.Data{}, errors.New("md5 signature password DOESN'T exist!")
+			return model.Data{}, errors.New("md5 signature password DOESN'T exist!")
 		}
 
 		argMap := make(map[string]string, len(data.Args))
@@ -42,7 +42,7 @@ func init() {
 		values = append(values, password)
 		text := strings.Join(values, "")
 		md5Text := fmt.Sprintf("%x", md5.Sum([]byte(text)))
-		data.Args = append(data.Args, bean.Arg{
+		data.Args = append(data.Args, model.Arg{
 			Key:    keyName,
 			Value:  md5Text,
 			Method: "GET",
@@ -51,7 +51,7 @@ func init() {
 		return data, nil
 	}
 
-	bean.RegisterPluginHandler("md5signature", bean.PluginInfo{
+	model.RegisterPluginHandler("md5signature", model.PluginInfo{
 		DisplayName: "MD5签名认证",
 		FieldNames: map[string]string{
 			"keyName":  "密钥名称",

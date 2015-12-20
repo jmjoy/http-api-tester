@@ -14,17 +14,25 @@ type bookmarkModel struct {
 	selected string
 }
 
-func (this *bookmarkModel) GetCurrent() (data Data, err error) {
+func (this *bookmarkModel) GetCurrent() (bookmark Bookmark, err error) {
 	var name string
 	has, err := this.Get(this.selected, &name)
 	if err != nil {
 		return
 	}
 	if !has {
-		return DataDefault(), nil
+		return Bookmark{
+			Name: "default",
+			Data: DataDefault(),
+		}, nil
 	}
 
-	return BookmarksModel.Get(name)
+	data, err := BookmarksModel.Get(name)
+	bookmark = Bookmark{
+		Name: name,
+		Data: data,
+	}
+	return
 }
 
 func (this *bookmarkModel) SetCurrent(name string) (err error) {
