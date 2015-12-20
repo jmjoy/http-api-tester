@@ -53,6 +53,7 @@ func DataDefault() Data {
 			C: 10,
 		},
 		Plugin: Plugin{
+			Key:  "default",
 			Data: map[string]string{},
 		},
 	}
@@ -135,7 +136,7 @@ func HookPlugin(data Data) (Data, error) {
 
 func init() {
 	// default plugin: not use!
-	RegisterPluginHandler("", PluginInfo{
+	RegisterPluginHandler("default", PluginInfo{
 		DisplayName: "不使用插件",
 		FieldNames:  map[string]string{},
 		Handler: func(data Data) (Data, error) {

@@ -53,6 +53,23 @@ func (this *dbHelper) Get(bucket string, key string) ([]byte, error) {
 	return value, nil
 }
 
+func (this *dbHelper) Each(bucket string, fn func([]byte, []byte) error) error {
+	db, err := bolt.Open(this.dbPath, 0600, nil)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	return db.View(func(tx *bolt.Tx) error {
+		bk := tx.Bucket([]byte(bucket))
+		if bk == nil {
+			return ErrBucketNotFound
+		}
+
+		return bk.ForEach(fn)
+	})
+}
+
 func (this *dbHelper) Put(bucket string, key string, value []byte) error {
 	db, err := bolt.Open(this.dbPath, 0600, nil)
 	if err != nil {

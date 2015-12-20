@@ -16,7 +16,9 @@ var utils = {
 };
 
 var templates = {
-    "args": utils.tplCompile("args_tpl")
+    "argsOptions":   utils.tplCompile("args_tpl"),
+    "pluginOptions": utils.tplCompile("plugin_option_tpl"),
+    "pluginPanel": utils.tplCompile("plugin_panel_tpl")
 };
 
 var page = {
@@ -33,18 +35,27 @@ var page = {
         $('#bm_c').val(data.Bm.C);
     },
 
-    "renderPlugins": function(plugins) {
+    "renderBookmarks": function(bookmarks) {
+    },
+
+    "renderPlugins": function(plugins, pluginKey) {
+        var html = templates.pluginOptions({"Plugins": plugins});
+        $("#plugin").html(html);
+        $('#plugin').selectpicker("refresh");
+
+        var html0 = templates.pluginPanel(plugins[pluginKey]);
+        $("#plugin_panel").html(html0);
     },
 
     "renderArgs": function(args, isReset) {
-        var html = templates.args({"Args": args});
+        var html = templates.argsOptions({"Args": args});
         if (isReset) {
             return $("#args_body").html(html);
         }
         return $("#args_body").append(html);
     },
 
-    "reflesh": function() {
+    "refresh": function() {
         $('.switch[type="checkbox"]').bootstrapSwitch();
         $('.selectpicker').selectpicker();
     },
@@ -63,7 +74,11 @@ var args = {
             "Method": "GET"
         }], false);
 
-        page.reflesh();
+        page.refresh();
+    },
+
+    "remove": function (btn) {
+        $(btn).parent().parent().remove();
     }
 };
 
@@ -78,7 +93,7 @@ $(function() {
     });
 
     // set style
-    page.reflesh();
+    page.refresh();
 
     // 【回调地狱】获取初始化数据
     $.ajax(configs.initDataUrl, {
@@ -93,6 +108,9 @@ $(function() {
 
             console.log(respData);
             page.renderBookmark(respData.Data.Bookmark);
+            page.renderPlugins(respData.Data.Plugins,
+                               respData.Data.Bookmark.Data.Plugin.Key);
+            page.refresh();
         },
         "error":  function(XMLHttpRequest, textStatus, errorThrown) {
             page.message("Request error: " + textStatus);
@@ -412,9 +430,6 @@ function argsAdd() {
     $('.switch[type="checkbox"]').bootstrapSwitch();
 }
 
-function argsRemove(btn) {
-    $(btn).parent().parent().remove();
-}
 
 function returnArgOptionTpl() {
     var tpl = $("#args_tpl").html();

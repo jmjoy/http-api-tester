@@ -2,6 +2,7 @@ package app
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -68,5 +69,34 @@ func TestCRUD(t *testing.T) {
 	}
 	if has {
 		t.Fatal("Has data?")
+	}
+}
+
+func TestKeys(t *testing.T) {
+	bucket := "test0"
+	model := NewModel(bucket)
+
+	keys, err := model.Keys()
+	if err != nil {
+		panic(err)
+	}
+	if len(keys) != 0 {
+		t.Fatal("not empty?")
+	}
+
+	testKeys := []string{
+		"1", "2", "3",
+	}
+	for _, k := range testKeys {
+		model.Put(k, "data")
+	}
+
+	keys, err = model.Keys()
+	if err != nil {
+		panic(err)
+	}
+	t.Log(keys)
+	if !reflect.DeepEqual(testKeys, keys) {
+		t.Fatal("not equal?")
 	}
 }

@@ -34,6 +34,18 @@ func (this *Model) Get(key string, data interface{}) (ok bool, err error) {
 	return true, nil
 }
 
+func (this *Model) Keys() (keys []string, err error) {
+	keys = make([]string, 0, 2)
+	err = Db.Each(this.bucket, func(k, v []byte) error {
+		keys = append(keys, string(k))
+		return nil
+	})
+	if err == ErrBucketNotFound {
+		err = nil
+	}
+	return
+}
+
 func (this *Model) Put(key string, data interface{}) (err error) {
 	buf, err := json.Marshal(data)
 	if err != nil {

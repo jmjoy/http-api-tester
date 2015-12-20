@@ -177,6 +177,7 @@
     </div>
 
 
+    <!-- 模板 -->
     <script id="args_tpl" type="text/x-handlebars-template">
         {{#each Args}}
         <tr>
@@ -190,7 +191,7 @@
                 <input type="checkbox" class="switch arg-method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="small" {{#eq Method "GET"}}checked="checked"{{/eq}} />
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-block btn-danger" onclick="argsRemove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-sm btn-block btn-danger" onclick="args.remove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
             </td>
         </tr>
         {{/each}}
@@ -203,18 +204,18 @@
     </script>
 
     <script id="plugin_option_tpl" type="text/x-handlebars-template">
-        {@each plugins as it,index}
-        <option value="${index}">${it.name}</option>
-        {@/each}
+        {{#each Plugins}}
+        <option value="{{@key}}">{{this.DisplayName}}</option>
+        {{/each}}
     </script>
 
     <script id="plugin_panel_tpl" type="text/x-handlebars-template">
-        {@each fields as it,index}
+        {{#each FieldNames}}
          <div class="form-group">
-            <label for="plugin_${index}">${it}：</label>
-            <input type="text" id="plugin_${index}" class="form-control">
+            <label for="plugin_{{@key}}">{{this}}：</label>
+            <input type="text" id="plugin_{{@key}}" class="form-control" />
         </div>
-        {@/each}
+        {{/each}}
     </script>
 
     <script id="result_tpl" type="text/x-handlebars-template">
