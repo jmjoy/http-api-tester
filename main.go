@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"github.com/jmjoy/http-api-tester/app"
+	"github.com/jmjoy/http-api-tester/router"
 )
 
 const (
@@ -18,14 +19,15 @@ var (
 
 func init() {
 	flag.StringVar(&gPort, "p", "8080", "服务器运行端口")
-	flag.StringVar(&gDbPath, "db", "http-api-tester.db", "数据库路径")
+	flag.StringVar(&gDbPath, "db", NAME+".db", "数据库路径")
 }
 
 func main() {
 	flag.Parse()
 
 	app.Run(app.Config{
-		Port:   gPort,
-		DbPath: gDbPath,
+		Port:    gPort,
+		DbPath:  gDbPath,
+		Routers: router.Routers,
 	})
 }

@@ -42,6 +42,6 @@ func (this *Model) Put(key string, data interface{}) (err error) {
 	return Db.Put(this.bucket, key, buf)
 }
 
-func (this *Model) Set(key string) (err error) {
+func (this *Model) Delete(key string) (err error) {
 	return Db.Delete(this.bucket, key)
 }

@@ -16,7 +16,7 @@ type Config struct {
 	DbPath string
 
 	// App need
-	Routers []map[string]IController
+	Routers map[string]IController
 }
 
 // Run is a function named Run
@@ -30,6 +30,11 @@ func Run(cfg Config) {
 	if err := initDb(cfg.DbPath); err != nil {
 		Log(LOG_LV_FAIL, err)
 		return
+	}
+
+	// register restful router
+	for pattren, controller := range cfg.Routers {
+		HandleRestful(pattren, controller)
 	}
 
 	Log(LOG_LV_INFO, "测试接口服务器在跑了，请访问 http://"+port)
