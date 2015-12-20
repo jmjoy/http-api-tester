@@ -4,21 +4,27 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	"encoding/json"
 )
 
 // IController is a interface named IController
 type IController interface {
-	// for handle one request
-	SetR(*http.Request)
-	SetW(http.ResponseWriter)
+	// reset rw of one context
+	Reset(http.ResponseWriter, *http.Request)
 
-	// restful
+	// RESTful
 	Get() error
 	Post() error
 	Put() error
 	Delete() error
+}
+
+func ResetController(c IController, w http.ResponseWriter, r *http.Request) {
+	field := reflect.ValueOf(c).FieldByName("Controller")
+
+	panic(field.CanSet())
 }
 
 var _ IController = new(Controller)
@@ -31,12 +37,14 @@ type Controller struct {
 	query url.Values // get params
 }
 
-func (this *Controller) SetR(r *http.Request) {
-	this.R = r
-}
+// Reset reset controller for handle one request
+func (this *Controller) Reset(w http.ResponseWriter, r *http.Request) {
+	if this == nil {
+		this = new(Controller)
+	}
 
-func (this *Controller) SetW(w http.ResponseWriter) {
 	this.W = w
+	this.R = r
 }
 
 func (this *Controller) MethodNotAllowed() error {

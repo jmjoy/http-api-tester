@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strings"
 	"sync"
 )
@@ -46,7 +45,9 @@ var controllerPoolMap = make(map[string]*sync.Pool)
 func HandleRestful(pattern string, c IController) {
 	controllerPoolMap[pattern] = &sync.Pool{
 		New: func() interface{} {
-			return reflect.New(reflect.TypeOf(c)).Interface()
+			// TODO Find why can't new a substruct
+			// return reflect.New(reflect.TypeOf(c)).Elem().Interface()
+			return c
 		},
 	}
 
@@ -54,8 +55,8 @@ func HandleRestful(pattern string, c IController) {
 		c := controllerPoolMap[pattern].Get().(IController)
 		defer controllerPoolMap[pattern].Put(c)
 
-		c.SetR(r)
-		c.SetW(w)
+		// ResetController(c, w, r)
+		c.Reset(w, r)
 
 		var err error
 		switch r.Method {
