@@ -22,7 +22,7 @@ func (this *bookmarkModel) GetCurrent() (bookmark Bookmark, err error) {
 	}
 	if !has {
 		return Bookmark{
-			Name: "default",
+			Name: BOOKMARK_DEFAULT_NAME,
 			Data: DataDefault(),
 		}, nil
 	}

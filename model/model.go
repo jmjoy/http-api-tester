@@ -6,3 +6,7 @@ const (
 	UPSERT_ADD    UpsertType = "ADD"
 	UPSERT_UPDATE UpsertType = "UPDATE"
 )
+
+const (
+	BOOKMARK_DEFAULT_NAME = "Default"
+)

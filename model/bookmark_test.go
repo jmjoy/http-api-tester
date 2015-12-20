@@ -14,7 +14,8 @@ func TestBookmarkCRUD(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if !reflect.DeepEqual(bookmark.Data, DataDefault()) || bookmark.Name != "default" {
+	if !reflect.DeepEqual(bookmark.Data, DataDefault()) ||
+		bookmark.Name != BOOKMARK_DEFAULT_NAME {
 		t.Fatal("not euqal?")
 	}
 
@@ -43,5 +44,9 @@ func TestBookmarkCRUD(t *testing.T) {
 
 	if !reflect.DeepEqual(bookmark.Data, DataDefault()) || bookmark.Name != testkey {
 		t.Fatal("not equal?")
+	}
+
+	if err = BookmarksModel.Delete(testkey); err != nil {
+		panic(err)
 	}
 }

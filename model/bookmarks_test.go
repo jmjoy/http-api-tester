@@ -69,3 +69,30 @@ func TestBookmarksCRUD(t *testing.T) {
 		t.Fatal("bookmark existd?")
 	}
 }
+
+func TestGetAllNames(t *testing.T) {
+	testKey := "test0"
+	defaultNames := []string{BOOKMARK_DEFAULT_NAME}
+	testNames := []string{BOOKMARK_DEFAULT_NAME, testKey}
+
+	names, err := BookmarksModel.GetAllNames()
+	if err != nil {
+		panic(err)
+	}
+	t.Log(defaultNames, names)
+	if !reflect.DeepEqual(defaultNames, names) {
+		t.Fatal("not equal?")
+	}
+
+	if err = BookmarksModel.Put(testKey, "hello world"); err != nil {
+		panic(err)
+	}
+
+	names, err = BookmarksModel.GetAllNames()
+	if err != nil {
+		panic(err)
+	}
+	if !reflect.DeepEqual(testNames, names) {
+		t.Fatal("not equal?")
+	}
+}

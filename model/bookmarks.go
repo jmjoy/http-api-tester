@@ -31,6 +31,18 @@ func (this *bookmarksModel) Get(name string) (data Data, err error) {
 	return
 }
 
+func (this *bookmarksModel) GetAllNames() (names []string, err error) {
+	otherNames, err := this.Model.Keys()
+	if err != nil {
+		return
+	}
+	names = []string{BOOKMARK_DEFAULT_NAME}
+	if len(otherNames) != 0 {
+		names = append(names, otherNames...)
+	}
+	return
+}
+
 func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error) {
 	if err = this.validateBookmarkName(bookmark.Name); err != nil {
 		return
