@@ -34,3 +34,5 @@ tags
 
 # db
 /http-api-tester.db
+
+*.tern-port

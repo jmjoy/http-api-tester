@@ -8,6 +8,11 @@ var configs = {
     "initDataUrl": "/?act=initData"
 };
 
+// TODO Move all global variables to this global object
+var global = {
+    "plugins": {}
+};
+
 var utils = {
     "tplCompile": function(id) {
         var html = $("#" + id).html();
@@ -16,9 +21,10 @@ var utils = {
 };
 
 var templates = {
-    "argsOptions":   utils.tplCompile("args_tpl"),
-    "pluginOptions": utils.tplCompile("plugin_option_tpl"),
-    "pluginPanel": utils.tplCompile("plugin_panel_tpl")
+    "argsOptions":     utils.tplCompile("args_tpl"),
+    "pluginOptions":   utils.tplCompile("plugin_option_tpl"),
+    "pluginPanel":     utils.tplCompile("plugin_panel_tpl"),
+    "bookmarkOptions": utils.tplCompile("bookmark_option_tpl")
 };
 
 var page = {
@@ -35,7 +41,11 @@ var page = {
         $('#bm_c').val(data.Bm.C);
     },
 
-    "renderBookmarks": function(bookmarks) {
+    "renderBookmarks": function(bookmarks, bookmarkName) {
+        var html = templates.bookmarkOptions({"Bookmarks": bookmarks});
+        $("#bookmark").html(html);
+        $("#bookmark").selectpicker('val', bookmarkName);
+        $('#bookmark').selectpicker("refresh");
     },
 
     "renderPlugins": function(plugins, pluginKey) {
@@ -43,8 +53,12 @@ var page = {
         $("#plugin").html(html);
         $('#plugin').selectpicker("refresh");
 
-        var html0 = templates.pluginPanel(plugins[pluginKey]);
-        $("#plugin_panel").html(html0);
+        this.renderPluginPanel(plugins[pluginKey]);
+    },
+
+    "renderPluginPanel": function(plugin) {
+        var html = templates.pluginPanel(plugin);
+        $("#plugin_panel").html(html);
     },
 
     "renderArgs": function(args, isReset) {
@@ -82,6 +96,14 @@ var args = {
     }
 };
 
+var plugins = {
+    "use": function() {
+        var key = $("#plugin").selectpicker('val');
+        var plugin = global.plugins[key];
+        page.renderPluginPanel(plugin);
+    }
+};
+
 // window.onload
 $(function() {
     // init libaray
@@ -107,9 +129,22 @@ $(function() {
             }
 
             console.log(respData);
-            page.renderBookmark(respData.Data.Bookmark);
-            page.renderPlugins(respData.Data.Plugins,
-                               respData.Data.Bookmark.Data.Plugin.Key);
+
+            var data = respData.Data;
+            page.renderBookmark(data.Bookmark);
+            page.renderBookmarks(data.Bookmarks, data.Bookmark.Name);
+            page.renderPlugins(data.Plugins, data.Bookmark.Data.Plugin.Key);
+            global.plugins = data.Plugins;
+
+            // init plugins value
+            var pluginData = data.Bookmark.Data.Plugin.Data;
+            for (var i in pluginData) {
+                $("#plugin_" + i).val(pluginData[i]);
+            }
+
+            // event binding
+            $("#plugin_use_btn").click(plugins.use);
+
             page.refresh();
         },
         "error":  function(XMLHttpRequest, textStatus, errorThrown) {

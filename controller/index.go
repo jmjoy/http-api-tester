@@ -34,9 +34,15 @@ func (this *IndexController) initData() (err error) {
 		return
 	}
 
+	bookmarkNames, err := model.BookmarksModel.GetAllNames()
+	if err != nil {
+		return
+	}
+
 	return this.JsonSuccess(map[string]interface{}{
-		"Bookmark": bookmark,
-		"Plugins":  model.PluginPool(),
+		"Bookmarks": bookmarkNames,
+		"Bookmark":  bookmark,
+		"Plugins":   model.PluginPool(),
 	})
 }
 

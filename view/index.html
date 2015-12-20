@@ -198,9 +198,9 @@
     </script>
 
     <script id="bookmark_option_tpl" type="text/x-handlebars-template">
-        {@each bookmarks as it,index}
-        <option value="${index}">${it.name}</option>
-        {@/each}
+        {{#each Bookmarks}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
     </script>
 
     <script id="plugin_option_tpl" type="text/x-handlebars-template">
