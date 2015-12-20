@@ -3,6 +3,7 @@ package app
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"reflect"
 )
 
@@ -22,8 +23,8 @@ func (this *StatusError) Error() string {
 	return this.message
 }
 
-func (this *StatusError) NewMessage(message string) *StatusError {
-	return NewStatusError(this.status, message)
+func (this *StatusError) NewMessage(message interface{}) *StatusError {
+	return NewStatusError(this.status, fmt.Sprint(message))
 }
 
 func (this *StatusError) NewMessageSpf(args ...interface{}) *StatusError {
@@ -46,8 +47,10 @@ func NewApiStatusError(status int, message string) *ApiStatusError {
 
 // definded error
 var (
-	ErrorNotFound         = NewStatusError(400, "not found")
-	ErrorMethodNotAllowed = NewStatusError(405, "method not allowed")
+	ErrBadRequest          = NewStatusError(http.StatusBadRequest, "bad request")
+	ErrNotFound            = NewStatusError(http.StatusNotFound, "not found")
+	ErrMethodNotAllowed    = NewStatusError(http.StatusMethodNotAllowed, "method not allowed")
+	ErrInternalServerError = NewStatusError(http.StatusInternalServerError, "internal server error")
 
-	ErrorBucketNotFound = errors.New("Bucket not found")
+	ErrBucketNotFound = errors.New("Bucket not found")
 )

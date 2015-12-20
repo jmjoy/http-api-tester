@@ -72,7 +72,7 @@ func HandleRestful(pattern string, c IController) {
 			err = c.Delete()
 
 		default:
-			err = ErrorMethodNotAllowed
+			err = ErrMethodNotAllowed
 		}
 
 		// handle error

@@ -91,7 +91,11 @@ type Response struct {
 	Bm      string
 }
 
-var PluginPool = make(map[string]PluginInfo)
+var pluginPool = make(map[string]PluginInfo)
+
+func PluginPool() map[string]PluginInfo {
+	return pluginPool
+}
 
 type pluginHandler func(Data) (Data, error)
 
@@ -106,18 +110,18 @@ func (this PluginInfo) IsNull() bool {
 }
 
 func RegisterPluginHandler(name string, info PluginInfo) error {
-	if _, has := PluginPool[name]; has {
+	if _, has := pluginPool[name]; has {
 		return goerrors.New("plugin has existed, CAN'T register again")
 	}
 	if info.IsNull() {
 		return goerrors.New("handler CAN'T be NULL")
 	}
-	PluginPool[name] = info
+	pluginPool[name] = info
 	return nil
 }
 
 func HookPlugin(data Data) (Data, error) {
-	plugin, has := PluginPool[data.Plugin.Key]
+	plugin, has := pluginPool[data.Plugin.Key]
 	if !has {
 		// if not exists, return default handler
 		return data, nil

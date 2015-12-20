@@ -17,7 +17,7 @@ func NewModel(bucket string) *Model {
 func (this *Model) Get(key string, data interface{}) (ok bool, err error) {
 	buf, err := Db.Get(this.bucket, key)
 	if err != nil {
-		if err == ErrorBucketNotFound {
+		if err == ErrBucketNotFound {
 			err = nil
 		}
 		return

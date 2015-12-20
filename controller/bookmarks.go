@@ -1,95 +1,54 @@
 package controller
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-
-	"github.com/jmjoy/http-api-tester/base"
-	"github.com/jmjoy/http-api-tester/bean"
+	"github.com/jmjoy/http-api-tester/app"
 	"github.com/jmjoy/http-api-tester/model"
 )
 
 type BookmarksController struct {
-	*base.Controller
-
-	model *model.BookmarksModel
-}
-
-func NewBookmarksController(w http.ResponseWriter, r *http.Request) base.Restful {
-	return &BookmarksController{
-		Controller: base.NewController(w, r),
-		model:      model.NewBookmarksModel(),
-	}
+	*app.Controller
 }
 
 // Get: get bookmark config by name or current
 func (this *BookmarksController) Get() error {
-	name := this.R().URL.Query().Get("name")
+	name := this.QueryGet("name")
 
-	data, err := this.model.Get(name)
-	if err != nil {
-		return base.NewApiStatusError(4000, err)
-	}
-
-	return this.RenderJson(data)
-}
-
-// Post: add bookmark config
-func (this *BookmarksController) Post() error {
-	bookmark, err := this.parseBookmarkFromBody()
+	data, err := model.BookmarksModel.Get(name)
 	if err != nil {
 		return err
 	}
 
-	// 添加书签
-	if err = this.model.Upsert(bookmark, model.UPSERT_ADD); err != nil {
-		return base.NewApiStatusError(4000, err)
-	}
+	return this.JsonSuccess(data)
+}
 
-	return this.RenderJson(nil)
+// Post: add bookmark config
+func (this *BookmarksController) Post() error {
+	return this.Upsert(model.UPSERT_ADD)
 }
 
 // Put: update bookmark config
 func (this *BookmarksController) Put() error {
-	bookmark, err := this.parseBookmarkFromBody()
-	if err != nil {
-		return base.NewApiStatusError(4000, err)
+	return this.Upsert(model.UPSERT_UPDATE)
+}
+
+func (this *BookmarksController) Upsert(typ model.UpsertType) (err error) {
+	var bookmark model.Bookmark
+	if err = this.ParseJsonBody(&bookmark); err != nil {
+		return
 	}
 
-	// 修改书签
-	if err = this.model.Upsert(bookmark, model.UPSERT_UPDATE); err != nil {
-		return base.NewApiStatusError(4000, err)
+	if err = model.BookmarksModel.Upsert(bookmark, typ); err != nil {
+		return
 	}
 
-	return this.RenderJson(nil)
+	return this.JsonSuccess(nil)
 }
 
 // Delete: delete bookmark
-func (this *BookmarksController) Delete() error {
-	name := this.R().URL.Query().Get("name")
-	if err := this.model.Delete(name); err != nil {
-		return base.NewApiStatusError(4000, err)
+func (this *BookmarksController) Delete() (err error) {
+	name := this.QueryGet("name")
+	if err = model.BookmarksModel.Delete(name); err != nil {
+		return
 	}
-	return this.RenderJson(nil)
-}
-
-// for Post and Put: upsert data
-func (this *BookmarksController) parseBookmarkFromBody() (bean.Bookmark, error) {
-	// Get Body
-	buf, err := ioutil.ReadAll(this.R().Body)
-	if err != nil {
-		return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Read body error: %s", err))
-	}
-
-	// 解析输入JSON
-	var bookmark bean.Bookmark
-	if len(buf) != 0 {
-		if err = json.Unmarshal(buf, &bookmark); err != nil {
-			return bean.Bookmark{}, base.NewApiStatusError(4000, fmt.Errorf("Unmarshal body error: %s", err))
-		}
-	}
-
-	return bookmark, nil
+	return this.JsonSuccess(nil)
 }

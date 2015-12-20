@@ -5,11 +5,14 @@ import (
 
 	"github.com/jmjoy/http-api-tester/app"
 	"github.com/jmjoy/http-api-tester/router"
+	"github.com/jmjoy/http-api-tester/text"
 )
 
 const (
 	NAME    = "http-api-tester"
 	VERSION = "0.5"
+
+	IS_DEBUG = true
 )
 
 var (
@@ -24,6 +27,9 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	text.IsDebug = IS_DEBUG
+	text.BasePath = "."
 
 	app.Run(app.Config{
 		Port:    gPort,

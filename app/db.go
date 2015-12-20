@@ -34,7 +34,7 @@ func (this *dbHelper) Get(bucket string, key string) ([]byte, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bk := tx.Bucket([]byte(bucket))
 		if bk == nil {
-			return ErrorBucketNotFound
+			return ErrBucketNotFound
 		}
 		buf := bk.Get([]byte(key))
 		if buf == nil {
@@ -89,7 +89,7 @@ func (this *dbHelper) Delete(bucket string, key string) error {
 	err = db.Update(func(tx *bolt.Tx) error {
 		bk := tx.Bucket([]byte(bucket))
 		if bk == nil {
-			return ErrorBucketNotFound
+			return ErrBucketNotFound
 		}
 		err = bk.Delete([]byte(key))
 		if err != nil {

@@ -3,6 +3,7 @@ package text
 import (
 	"encoding/base64"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
@@ -13,6 +14,9 @@ var (
 
 func ProvideString(path string) string {
 	if IsDebug {
+		if !isFileExists(path) {
+			return ""
+		}
 		buf, err := ioutil.ReadFile(filepath.Join(BasePath, path))
 		if err != nil {
 			panic(err)
@@ -25,6 +29,9 @@ func ProvideString(path string) string {
 
 func ProvideBytes(path string) []byte {
 	if IsDebug {
+		if !isFileExists(path) {
+			return nil
+		}
 		buf, err := ioutil.ReadFile(filepath.Join(BasePath, path))
 		if err != nil {
 			panic(err)
@@ -32,9 +39,18 @@ func ProvideBytes(path string) []byte {
 		return buf
 	}
 
-	buf, err := base64.StdEncoding.DecodeString(Text[path])
+	content, has := Text[path]
+	if !has {
+		return nil
+	}
+	buf, err := base64.StdEncoding.DecodeString(content)
 	if err != nil {
 		panic(err)
 	}
 	return buf
+}
+
+func isFileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
 }

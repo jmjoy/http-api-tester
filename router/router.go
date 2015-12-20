@@ -6,9 +6,9 @@ import (
 )
 
 var Routers = map[string]app.IController{
-	"/":            controller.IndexController,
-	"/favicon.ico": controller.FaviconController,
-	"/static/":     controller.StaticController,
-	"/bookmark":    controller.BookmarkController,
-	"/bookmarks":   controller.BookmarksController,
+	"/":            new(controller.IndexController),
+	"/favicon.ico": new(controller.FaviconController),
+	"/static/":     new(controller.StaticController),
+	"/bookmark":    new(controller.BookmarkController),
+	"/bookmarks":   new(controller.BookmarksController),
 }

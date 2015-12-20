@@ -1,7 +1,9 @@
+// user errros
 package errors
 
 import "github.com/jmjoy/http-api-tester/app"
 
+// ApiStatusError
 var (
 	ErrBookmarkNameEmpty   = app.NewApiStatusError(1000, "书签名字不能为空")
 	ErrBookmarkNameInvalid = app.NewApiStatusError(1001, "书签名字不合格")
