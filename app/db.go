@@ -11,7 +11,7 @@ type dbHelper struct {
 	dbPath string
 }
 
-func initDb(dbPath string) error {
+func InitDb(dbPath string) error {
 	// check can open?
 	db, err := bolt.Open(dbPath, 0600, nil)
 	if err != nil {

@@ -40,7 +40,6 @@ func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error
 	if typ == UPSERT_ADD {
 		var data Data
 		var has bool
-
 		has, err = this.Model.Get(bookmark.Name, &data)
 		if err != nil {
 			return

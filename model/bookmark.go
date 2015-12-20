@@ -1,6 +1,8 @@
 package model
 
-import "github.com/jmjoy/http-api-tester/app"
+import (
+	"github.com/jmjoy/http-api-tester/app"
+)
 
 var BookmarkModel = &bookmarkModel{
 	Model:    app.NewModel("bookmark"),

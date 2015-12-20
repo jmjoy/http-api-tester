@@ -14,7 +14,7 @@ func TestMain(m *testing.M) {
 	dbPath := "./model_test.db"
 	defer os.Remove(dbPath)
 
-	if err := initDb(dbPath); err != nil {
+	if err := InitDb(dbPath); err != nil {
 		panic(err)
 	}
 	m.Run()

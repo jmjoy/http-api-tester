@@ -27,7 +27,7 @@ func Run(cfg Config) {
 	}
 
 	// init db config
-	if err := initDb(cfg.DbPath); err != nil {
+	if err := InitDb(cfg.DbPath); err != nil {
 		Log(LOG_LV_FAIL, err)
 		return
 	}
