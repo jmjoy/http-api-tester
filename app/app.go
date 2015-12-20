@@ -67,24 +67,24 @@ func HandleRestful(pattern string, c IController) {
 			err = c.Delete()
 
 		default:
-			err = new(ErrorMethodNotAllowed)
+			err = ErrorMethodNotAllowed
 		}
 
 		// handle error
 		if err != nil {
 			switch err.(type) {
-			case IApiStatusError: // api error
-				apiStatusErr := err.(IApiStatusError)
-				status := errorGetStatus(apiStatusErr)
-				message := errorGetMessage(apiStatusErr)
+			case *ApiStatusError: // api error
+				apiStatusErr := err.(*ApiStatusError)
+				status := apiStatusErr.status
+				message := apiStatusErr.message
 				if err := jsonRender(w, status, message, nil); err != nil {
 					panic(err)
 				}
 
-			case IStatusError: // web or server error
-				statusErr := err.(IStatusError)
-				status := errorGetStatus(statusErr)
-				message := errorGetMessage(statusErr)
+			case *StatusError: // web or server error
+				statusErr := err.(*StatusError)
+				status := statusErr.status
+				message := statusErr.message
 				Log(LOG_LV_FAIL, fmt.Sprintf("<%d> %s (%s)", status, message, r.URL))
 				http.Error(w, message, status)
 
