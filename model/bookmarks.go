@@ -1,87 +1,71 @@
 package model
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/jmjoy/http-api-tester/base"
-	"github.com/jmjoy/http-api-tester/bean"
+	"github.com/jmjoy/http-api-tester/app"
+	"github.com/jmjoy/http-api-tester/errors"
 )
 
-type BookmarksModel struct {
+var BookmarksModel = &bookmarksModel{
+	Model: app.NewModel("bookmarks"),
 }
 
-func NewBookmarksModel() *BookmarksModel {
-	return new(BookmarksModel)
+type bookmarksModel struct {
+	*app.Model
 }
 
-func (this *BookmarksModel) Get(name string) (bean.Data, error) {
-	if err := this.validateBookmarkName(name); err != nil {
-		return bean.Data{}, err
+func (this *bookmarksModel) Get(name string) (data Data, err error) {
+	if err = this.validateBookmarkName(name); err != nil {
+		return
 	}
 
-	bookmark, err := base.Db.Get("bookmarks", name)
-
-	fmt.Println(string(bookmark), err)
-
+	has, err := this.Model.Get(name, &data)
 	if err != nil {
-		return bean.Data{}, err
+		return
 	}
 
-	fmt.Println("bookmark get no error")
-
-	fmt.Println("bookmark", string(bookmark))
-
-	if bookmark == nil {
-		return bean.Data{}, base.ErrorBookmarkNotFound
+	if !has {
+		err = errors.ErrBookmarkNotFound
+		return
 	}
 
-	var data bean.Data
-	err = json.Unmarshal(bookmark, &data)
-	return data, err
+	return
 }
 
-func (this *BookmarksModel) Upsert(bookmark bean.Bookmark, typ UpsertType) error {
-	if err := this.validateBookmarkName(bookmark.Name); err != nil {
-		return err
+func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error) {
+	if err = this.validateBookmarkName(bookmark.Name); err != nil {
+		return
 	}
 
-	// check is exists? when add
+	// check is exists when add
 	if typ == UPSERT_ADD {
-		buf, _ := base.Db.Get("bookmarks", bookmark.Name)
-		if buf != nil {
-			return fmt.Errorf("该书签名字已经存在了")
+		var data Data
+		var has bool
+
+		has, err = this.Model.Get(bookmark.Name, &data)
+		if err != nil {
+			return
+		}
+		if has {
+			return errors.ErrBookmarkExisted
 		}
 	}
 
-	buf, err := json.Marshal(bookmark.Data)
-	if err != nil {
-		return err
-	}
-
-	if err = base.Db.Put("bookmarks", bookmark.Name, buf); err != nil {
-		return err
-	}
-
-	return nil
+	return this.Put(bookmark.Name, bookmark.Data)
 }
 
-func (this *BookmarksModel) Delete(name string) error {
-	if err := this.validateBookmarkName(name); err != nil {
-		return err
+func (this *bookmarksModel) Delete(name string) (err error) {
+	if err = this.validateBookmarkName(name); err != nil {
+		return
 	}
 
-	if err := base.Db.Delete("bookmarks", name); err != nil {
-		return err
-	}
-
-	return nil
+	return this.Model.Delete(name)
 }
 
-func (this *BookmarksModel) validateBookmarkName(name string) error {
+func (this *bookmarksModel) validateBookmarkName(name string) error {
 	if name == "" {
-		return fmt.Errorf("书签名字不能为空")
+		return errors.ErrBookmarkNameEmpty
 	}
+
 	// TODO 暂时允许所有名字
 	return nil
 }

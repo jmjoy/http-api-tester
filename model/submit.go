@@ -6,47 +6,42 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/jmjoy/http-api-tester/bean"
-
 	"github.com/jmjoy/boom/boomer"
 )
 
-type SubmitModel struct {
-}
+var SubmitModel = &submitModel{}
 
-func NewSubmitModel() *SubmitModel {
-	return new(SubmitModel)
-}
+type submitModel struct{}
 
-func (this *SubmitModel) Submit(data bean.Data) (bean.Response, error) {
-	if err := data.Validate(); err != nil {
-		return bean.Response{}, err
+func (this *submitModel) Submit(data Data) (resp Response, err error) {
+	if err = data.Validate(); err != nil {
+		return
 	}
 
-	data, err := bean.HookPlugin(data)
+	data, err = HookPlugin(data)
 	if err != nil {
-		return bean.Response{}, err
+		return
 	}
 
 	req, err := this.makeRequest(data)
 	if err != nil {
-		return bean.Response{}, err
+		return
 	}
 
-	var response bean.Response
+	var response Response
 
 	if err = this.submitTest(req, &response); err != nil {
-		return bean.Response{}, err
+		return
 	}
 
 	if err = this.submitBenckmark(req, data.Bm, &response); err != nil {
-		return bean.Response{}, err
+		return
 	}
 
 	return response, nil
 }
 
-func (this *SubmitModel) makeRequest(data bean.Data) (*http.Request, error) {
+func (this *submitModel) makeRequest(data Data) (*http.Request, error) {
 	u, err := url.Parse(data.Url)
 	if err != nil {
 		return nil, err
@@ -71,7 +66,7 @@ func (this *SubmitModel) makeRequest(data bean.Data) (*http.Request, error) {
 	return http.NewRequest(data.Method, u.String(), body)
 }
 
-func (this *SubmitModel) submitTest(req *http.Request, response *bean.Response) error {
+func (this *submitModel) submitTest(req *http.Request, response *Response) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -95,7 +90,7 @@ func (this *SubmitModel) submitTest(req *http.Request, response *bean.Response) 
 	return nil
 }
 
-func (this *SubmitModel) submitBenckmark(req *http.Request, bm bean.Bm, response *bean.Response) error {
+func (this *submitModel) submitBenckmark(req *http.Request, bm Bm, response *Response) error {
 	if !bm.Switch {
 		return nil
 	}

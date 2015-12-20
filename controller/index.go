@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/jmjoy/http-api-tester/base"
 	"github.com/jmjoy/http-api-tester/bean"
 	"github.com/jmjoy/http-api-tester/model"
 	"github.com/jmjoy/http-api-tester/text"

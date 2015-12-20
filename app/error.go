@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 )
 
@@ -25,6 +26,10 @@ func (this *StatusError) NewMessage(message string) *StatusError {
 	return NewStatusError(this.status, message)
 }
 
+func (this *StatusError) NewMessageSpf(args ...interface{}) *StatusError {
+	return NewStatusError(this.status, fmt.Sprintf(this.message, args...))
+}
+
 func (this *StatusError) isNameEqual(err error) bool {
 	return reflect.TypeOf(this).Name() == reflect.TypeOf(err).Name()
 }
@@ -44,6 +49,5 @@ var (
 	ErrorNotFound         = NewStatusError(400, "not found")
 	ErrorMethodNotAllowed = NewStatusError(405, "method not allowed")
 
-	ErrorBucketNotFound   = errors.New("Bucket not found")
-	ErrorBookmarkNotFound = errors.New("Bookmark not found")
+	ErrorBucketNotFound = errors.New("Bucket not found")
 )

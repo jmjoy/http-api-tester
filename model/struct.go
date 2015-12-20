@@ -1,8 +1,10 @@
-package bean
+package model
 
 import (
-	"errors"
+	goerrors "errors"
 	"net/url"
+
+	"github.com/jmjoy/http-api-tester/errors"
 )
 
 // bookmarks
@@ -12,15 +14,6 @@ type BookmarkMap map[string]Data
 type Bookmark struct {
 	Name string
 	Data Data
-}
-
-// Submit Data
-type Data struct {
-	Method string
-	Url    string
-	Args   []Arg
-	Bm     Bm
-	Plugin Plugin
 }
 
 // Submit Arg
@@ -42,6 +35,15 @@ type Plugin struct {
 	Data map[string]string
 }
 
+// Submit Data
+type Data struct {
+	Method string
+	Url    string
+	Args   []Arg
+	Bm     Bm
+	Plugin Plugin
+}
+
 func DataDefault() Data {
 	return Data{
 		Method: "GET",
@@ -54,7 +56,7 @@ func DataDefault() Data {
 
 func (this Data) Validate() error {
 	if this.Url == "" {
-		return errors.New("请指定URL")
+		return errors.ErrUrlEmpty
 	}
 
 	u, err := url.Parse(this.Url)
@@ -63,18 +65,18 @@ func (this Data) Validate() error {
 	}
 
 	if u.Scheme != "http" && u.Scheme != "https" {
-		return errors.New("未知协议：" + u.Scheme)
+		return errors.ErrUrlUnknowScheme.NewMessageSpf(u.Scheme)
 	}
 
 	if u.Host == "" {
-		return errors.New("请指定host")
+		return errors.ErrUrlEmptyHost
 	}
 
 	for _, arg := range this.Args {
 		switch arg.Method {
 		case "GET", "POST":
 		default:
-			return errors.New("参数中包含未知请求方式: " + arg.Method)
+			return errors.ErrUrlUnknowArgMethod.NewMessageSpf(arg.Method)
 		}
 	}
 
@@ -105,10 +107,10 @@ func (this PluginInfo) IsNull() bool {
 
 func RegisterPluginHandler(name string, info PluginInfo) error {
 	if _, has := PluginPool[name]; has {
-		return errors.New("plugin has existed, CAN'T register again")
+		return goerrors.New("plugin has existed, CAN'T register again")
 	}
 	if info.IsNull() {
-		return errors.New("handler CAN'T be NULL")
+		return goerrors.New("handler CAN'T be NULL")
 	}
 	PluginPool[name] = info
 	return nil

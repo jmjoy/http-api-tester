@@ -1,48 +1,39 @@
 package model
 
-import (
-	"github.com/jmjoy/http-api-tester/base"
-	"github.com/jmjoy/http-api-tester/bean"
-)
+import "github.com/jmjoy/http-api-tester/app"
 
-type BookmarkModel struct {
+var BookmarkModel = &bookmarkModel{
+	Model:    app.NewModel("bookmark"),
+	selected: "selected",
 }
 
-func NewBookmarkModel() *BookmarkModel {
-	return new(BookmarkModel)
+type bookmarkModel struct {
+	*app.Model
+	selected string
 }
 
-func (this *BookmarkModel) GetCurrent() (bean.Data, error) {
-	name, err := base.Db.Get("bookmark", "selected")
+func (this *bookmarkModel) GetCurrent() (data Data, err error) {
+	var name string
+	has, err := this.Get(this.selected, &name)
 	if err != nil {
-		return this.handleGetError(err)
+		return
+	}
+	if !has {
+		return DataDefault(), nil
 	}
 
-	data, err := NewBookmarksModel().Get(string(name))
+	return BookmarksModel.Get(name)
+}
+
+func (this *bookmarkModel) SetCurrent(name string) (err error) {
+	if err = BookmarksModel.validateBookmarkName(name); err != nil {
+		return
+	}
+
+	_, err = BookmarksModel.Get(name)
 	if err != nil {
-		return this.handleGetError(err)
+		return
 	}
 
-	return data, nil
-}
-
-func (this *BookmarkModel) SetCurrent(name string) error {
-	bookmarksModel := NewBookmarksModel()
-	if err := bookmarksModel.validateBookmarkName(name); err != nil {
-		return err
-	}
-	if _, err := bookmarksModel.Get(name); err != nil {
-		return err
-	}
-	if err := base.Db.Put("bookmark", "selected", []byte(name)); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (this *BookmarkModel) handleGetError(err error) (bean.Data, error) {
-	if err == base.ErrorBucketNotFound || err == base.ErrorBookmarkNotFound {
-		return bean.DataDefault(), nil
-	}
-	return bean.Data{}, err
+	return this.Put(this.selected, name)
 }
