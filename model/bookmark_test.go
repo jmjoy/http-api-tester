@@ -10,6 +10,15 @@ import (
 func TestBookmarkCRUD(t *testing.T) {
 	testkey := "testBookmark"
 
+	name, has, err := BookmarkModel.GetCurrentKey()
+	t.Log("name:", name)
+	if err != nil {
+		panic(err)
+	}
+	if has {
+		t.Fatal("Has set current bookmark?")
+	}
+
 	bookmark, err := BookmarkModel.GetCurrent()
 	if err != nil {
 		panic(err)

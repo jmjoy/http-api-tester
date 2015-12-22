@@ -9,4 +9,5 @@ const (
 
 const (
 	BOOKMARK_DEFAULT_NAME = "Default"
+	PLUGIN_DEFAULT_NAME   = "default"
 )

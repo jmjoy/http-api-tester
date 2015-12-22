@@ -1,7 +1,9 @@
 // user errros
 package errors
 
-import "github.com/jmjoy/http-api-tester/app"
+import (
+	"github.com/jmjoy/http-api-tester/app"
+)
 
 // ApiStatusError
 var (
@@ -9,6 +11,7 @@ var (
 	ErrBookmarkNameInvalid = app.NewApiStatusError(1001, "书签名字不合格")
 	ErrBookmarkNotFound    = app.NewApiStatusError(1002, "书签不存在")
 	ErrBookmarkExisted     = app.NewApiStatusError(1003, "书签已存在")
+	ErrBookmarkEditDefault = app.NewApiStatusError(1003, "不能新增或修改默认书签")
 
 	ErrUrlEmpty           = app.NewApiStatusError(2000, "URL不能为空")
 	ErrUrlUnknowScheme    = app.NewApiStatusError(2001, "URL未知协议：%s")

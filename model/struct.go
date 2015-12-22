@@ -53,7 +53,7 @@ func DataDefault() Data {
 			C: 10,
 		},
 		Plugin: Plugin{
-			Key:  "default",
+			Key:  PLUGIN_DEFAULT_NAME,
 			Data: map[string]string{},
 		},
 	}
@@ -115,6 +115,9 @@ func (this PluginInfo) IsNull() bool {
 }
 
 func RegisterPluginHandler(name string, info PluginInfo) error {
+	if name == PLUGIN_DEFAULT_NAME {
+		return goerrors.New("plugin name CAN'T be " + PLUGIN_DEFAULT_NAME)
+	}
 	if _, has := pluginPool[name]; has {
 		return goerrors.New("plugin has existed, CAN'T register again")
 	}
@@ -136,7 +139,7 @@ func HookPlugin(data Data) (Data, error) {
 
 func init() {
 	// default plugin: not use!
-	RegisterPluginHandler("default", PluginInfo{
+	RegisterPluginHandler(PLUGIN_DEFAULT_NAME, PluginInfo{
 		DisplayName: "不使用插件",
 		FieldNames:  map[string]string{},
 		Handler: func(data Data) (Data, error) {

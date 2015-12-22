@@ -15,6 +15,11 @@ type bookmarksModel struct {
 
 func (this *bookmarksModel) Get(name string) (data Data, err error) {
 	if err = this.validateBookmarkName(name); err != nil {
+		// get default bookmark
+		if err == errors.ErrBookmarkEditDefault {
+			data = DataDefault()
+			err = nil
+		}
 		return
 	}
 
@@ -75,6 +80,10 @@ func (this *bookmarksModel) Delete(name string) (err error) {
 func (this *bookmarksModel) validateBookmarkName(name string) error {
 	if name == "" {
 		return errors.ErrBookmarkNameEmpty
+	}
+
+	if name == BOOKMARK_DEFAULT_NAME {
+		return errors.ErrBookmarkEditDefault
 	}
 
 	// TODO 暂时允许所有名字

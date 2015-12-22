@@ -14,9 +14,13 @@ type bookmarkModel struct {
 	selected string
 }
 
+func (this *bookmarkModel) GetCurrentKey() (name string, has bool, err error) {
+	has, err = this.Get(this.selected, &name)
+	return
+}
+
 func (this *bookmarkModel) GetCurrent() (bookmark Bookmark, err error) {
-	var name string
-	has, err := this.Get(this.selected, &name)
+	name, has, err := this.GetCurrentKey()
 	if err != nil {
 		return
 	}

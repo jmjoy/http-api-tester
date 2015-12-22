@@ -28,6 +28,15 @@ func TestBookmarksCRUD(t *testing.T) {
 		panic(err)
 	}
 
+	var inDefaultBookmark = Bookmark{
+		Name: BOOKMARK_DEFAULT_NAME,
+		Data: DataDefault(),
+	}
+	err = BookmarksModel.Upsert(inDefaultBookmark, UPSERT_ADD)
+	if err != errors.ErrBookmarkEditDefault {
+		t.Fatal("Can edit default?")
+	}
+
 	err = BookmarksModel.Upsert(defaultBookmark, UPSERT_ADD)
 	if err != errors.ErrBookmarkExisted {
 		t.Fatal("Bookmark not existed?")
@@ -67,6 +76,11 @@ func TestBookmarksCRUD(t *testing.T) {
 	_, err = BookmarksModel.Get(testkey)
 	if err != errors.ErrBookmarkNotFound {
 		t.Fatal("bookmark existd?")
+	}
+
+	err = BookmarksModel.Delete(BOOKMARK_DEFAULT_NAME)
+	if err != errors.ErrBookmarkEditDefault {
+		t.Fatal("Can delete default?")
 	}
 }
 
