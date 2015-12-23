@@ -53,16 +53,20 @@ func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error
 		return
 	}
 
-	// check is exists when add
+	var data Data
+	has, err := this.Model.Get(bookmark.Name, data)
+	if err != nil {
+		return
+	}
+
+	// check is exists or not
 	if typ == UPSERT_ADD {
-		var data Data
-		var has bool
-		has, err = this.Model.Get(bookmark.Name, &data)
-		if err != nil {
-			return
-		}
 		if has {
 			return errors.ErrBookmarkExisted
+		}
+	} else {
+		if !has {
+			return errors.ErrBookmarkNotFound
 		}
 	}
 

@@ -6,6 +6,7 @@ var configs = {
 
 // TODO Move all global variables to this global object
 var global = {
+    "environ": "dev",
     "plugins": {}
 };
 
@@ -261,12 +262,54 @@ var bookmarks = {
     "edit": function() {
         $("#confirm_dialog_title").html("编辑书签");
         $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
-        $("#confirm_dialog_submit_btn").click(this.handlEdit);
+        $("#confirm_dialog_submit_btn").click(bookmarks.handleEdit);
         $("#confirm_dialog").modal("show");
     },
 
     "handleEdit": function() {
-        
+        var bookmark = {};
+        try {
+            bookmark.Data = data.get();
+            bookmark.Name = $("#bookmark").selectpicker('val');
+        } catch(e) {
+            $("#confirm_dialog").modal('hide');
+            return page.message(e);
+        }
+
+        console.log("update data", bookmark);
+
+        // 安全禁用
+        var btn = this;
+        $(btn).button('loading');
+
+        // 联网
+        $.ajax({
+            "url":  g.bookmarkUrl,
+            "type":  "PUT",
+            "data":  JSON.stringify(bookmark),
+            "contentType":  "application/json",
+            "cache": false,
+            "dataType": "json",
+            "success":  function(data){
+                // 恢复按钮状态
+                $(btn).button('reset');
+                $("#confirm_dialog").modal('hide');
+
+                if (data.status != 200) {
+                    alertMsg(data.msg);
+                    return false;
+                }
+
+                // 成功，无动作
+            },
+        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
+                // 恢复按钮状态
+                $(btn).button('reset');
+                $("#confirm_dialog").modal('hide');
+
+                alertMsg(textStatus);
+            }
+        });
     }
 
 };
@@ -274,6 +317,10 @@ var bookmarks = {
 // window.onload
 $(function() {
     // init libaray
+    if (global.environ != "dev") {
+        console.log = function() {};
+    }
+
     Handlebars.registerHelper('eq', function(v1, v2, options) {
         if(v1 == v2) {
             return options.fn(this);
@@ -390,49 +437,6 @@ function renderData(data) {
 }
 
 function handleBookmarkEdit() {
-    try {
-        var bookmark = getRequestData();
-        var key = $("#bookmark").selectpicker('val');
-        var name = $("#bookmark option[value="+key+"]").html();
-        bookmark.name = name;
-    } catch(e) {
-        $("#confirm_dialog").modal('hide');
-        alertMsg(e);
-        return false;
-    }
-
-    // 安全禁用
-    var btn = this;
-    $(btn).button('loading');
-
-    // 联网
-    $.ajax({
-        "url":  g.bookmarkUrl,
-        "type":  "PUT",
-        "data":  JSON.stringify(bookmark),
-        "contentType":  "application/json",
-        "cache": false,
-        "dataType": "json",
-        "success":  function(data){
-            // 恢复按钮状态
-            $(btn).button('reset');
-            $("#confirm_dialog").modal('hide');
-
-            if (data.status != 200) {
-                alertMsg(data.msg);
-                return false;
-            }
-
-            // 成功，无动作
-        },
-       "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-            // 恢复按钮状态
-            $(btn).button('reset');
-            $("#confirm_dialog").modal('hide');
-
-            alertMsg(textStatus);
-        }
-    });
 }
 
 function hiddenErrAlert() {
