@@ -33,6 +33,7 @@ func (this *BookmarksController) Put() error {
 
 func (this *BookmarksController) Upsert(typ model.UpsertType) (err error) {
 	var bookmark model.Bookmark
+
 	if err = this.ParseJsonBody(&bookmark); err != nil {
 		return
 	}

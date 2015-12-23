@@ -21,14 +21,15 @@ func (this *BookmarkController) Get() (err error) {
 
 // Post: Set current bookmark
 func (this *BookmarkController) Post() (err error) {
-	var data map[string]string
-	if err = this.ParseJsonBody(&data); err != nil {
+	var inputs map[string]string
+	if err = this.ParseJsonBody(&inputs); err != nil {
 		return
 	}
 
-	if err = model.BookmarkModel.SetCurrent(data["name"]); err != nil {
+	data, err := model.BookmarkModel.SetCurrent(inputs["Name"])
+	if err != nil {
 		return
 	}
 
-	return this.JsonSuccess(nil)
+	return this.JsonSuccess(data)
 }

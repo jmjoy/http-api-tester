@@ -115,9 +115,6 @@ func (this PluginInfo) IsNull() bool {
 }
 
 func RegisterPluginHandler(name string, info PluginInfo) error {
-	if name == PLUGIN_DEFAULT_NAME {
-		return goerrors.New("plugin name CAN'T be " + PLUGIN_DEFAULT_NAME)
-	}
 	if _, has := pluginPool[name]; has {
 		return goerrors.New("plugin has existed, CAN'T register again")
 	}

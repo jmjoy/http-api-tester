@@ -66,7 +66,13 @@ func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error
 		}
 	}
 
-	return this.Put(bookmark.Name, bookmark.Data)
+	if err = this.Put(bookmark.Name, bookmark.Data); err != nil {
+		return
+	}
+
+	// set upserted bookmark to current
+	_, err = BookmarkModel.SetCurrent(bookmark.Name)
+	return
 }
 
 func (this *bookmarksModel) Delete(name string) (err error) {

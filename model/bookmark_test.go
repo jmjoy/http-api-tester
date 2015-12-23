@@ -37,13 +37,16 @@ func TestBookmarkCRUD(t *testing.T) {
 		panic(err)
 	}
 
-	err = BookmarkModel.SetCurrent("not-existed")
+	_, err = BookmarkModel.SetCurrent("not-existed")
 	if err != errors.ErrBookmarkNotFound {
 		t.Fatal("found?")
 	}
-	err = BookmarkModel.SetCurrent(testkey)
+	data, err := BookmarkModel.SetCurrent(testkey)
 	if err != nil {
 		panic(err)
+	}
+	if !reflect.DeepEqual(data, defaultBookmark.Data) {
+		t.Fatal("not equal?")
 	}
 
 	bookmark, err = BookmarkModel.GetCurrent()

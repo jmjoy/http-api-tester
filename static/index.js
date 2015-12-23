@@ -1,9 +1,3 @@
-var gData = null;
-var gOptionTpl = null;
-var gConfirmDialogSubmitBtnAction = "";
-var gPluginKey = "";
-var gResultTest = "";
-
 var configs = {
     "initDataUrl":  "/?act=initData",
     "bookmarkUrl":  "/bookmark",
@@ -47,17 +41,21 @@ var templates = {
 };
 
 var page = {
-    "renderBookmark": function(bookmark) {
-        var data = bookmark.Data;
-
+    "renderData": function(data) {
+        // url
         $('#method').bootstrapSwitch('state', data.Method=="GET");
         $('#url').val(data.Url);
 
+        // args
         this.renderArgs(data.Args, true);
 
+        // bm
         $('#bm_switch').bootstrapSwitch('state', data.Bm.Switch);
         $('#bm_n').val(data.Bm.N);
         $('#bm_c').val(data.Bm.C);
+
+        // plugin
+        this.renderPlugin(data.Plugin);
     },
 
     "renderBookmarks": function(bookmarks, bookmarkName) {
@@ -67,17 +65,21 @@ var page = {
         $('#bookmark').selectpicker("refresh");
     },
 
+    "renderPlugin": function(plugin) {
+        var html = templates.pluginPanel(global.plugins[plugin.Key]);
+        $("#plugin_panel").html(html);
+        $("#plugin").selectpicker('val', plugin.Key);
+
+        // init plugins value
+        var pluginData = plugin.Data;
+        for (var i in pluginData) {
+            $("#plugin_" + i).val(pluginData[i]);
+        }
+    },
+
     "renderPlugins": function(plugins, pluginKey) {
         var html = templates.pluginOptions({"Plugins": plugins});
         $("#plugin").html(html);
-        $('#plugin').selectpicker("refresh");
-
-        this.renderPluginPanel(plugins[pluginKey]);
-    },
-
-    "renderPluginPanel": function(plugin) {
-        var html = templates.pluginPanel(plugin);
-        $("#plugin_panel").html(html);
     },
 
     "renderArgs": function(args, isReset) {
@@ -91,6 +93,7 @@ var page = {
     "refresh": function() {
         $('.switch[type="checkbox"]').bootstrapSwitch();
         $('.selectpicker').selectpicker();
+        $('#plugin').selectpicker("refresh");
     },
 
     "message": function (msg) {
@@ -102,6 +105,10 @@ var page = {
         $("#bookmark_add_err").html(msg);
         $("#bookmark_add_err").removeClass("hidden");
         return false;
+    },
+
+    "inputDialoyMessageHide": function() {
+        $("#bookmark_add_err").addClass("hidden");
     }
 };
 
@@ -170,7 +177,7 @@ var plugins = {
     "use": function() {
         var key = $("#plugin").selectpicker('val');
         var plugin = global.plugins[key];
-        page.renderPluginPanel(plugin);
+        page.renderPlugin(plugin);
     }
 };
 
@@ -178,20 +185,23 @@ var bookmarks = {
     "handleUse": function() { // TODO
         var btn = this;
         $(btn).button('loading');
+        var name = $("#bookmark").selectpicker('val');
 
-        var key = $("#bookmark").selectpicker('val');
-        var inputs = {"key": key};
-        $.get(g.bookmarkUrl, inputs, function(data) {
+        utils.ajax(configs.bookmarkUrl, "POST", {"Name":name}, function(data) {
             $(btn).button('reset');
 
-            if (data.status != 200) {
-                alertMsg(data.msg);
-                return;
+            console.log(data);
+
+            if (data.Status != 200) {
+                return page.inputDialoyMessage(data.Message);
             }
 
-            renderData(data.data);
+            page.renderData(data.Data);
 
-        }, "json");
+        }, function(textStatus) {
+            $(btn).button('reset'); // 恢复按钮状态
+            return page.inputDialoyMessage(textStatus);
+        });
     },
 
     "add": function() {
@@ -215,7 +225,7 @@ var bookmarks = {
 
         var bookmark = {};
         try {
-            bookmark = data.get();
+            bookmark.Data = data.get();
             bookmark.Name = name;
         } catch(e) {
             return page.inputDialoyMessage(e);
@@ -224,6 +234,8 @@ var bookmarks = {
         // 安全禁用
         var btn = this;
         $(btn).button('loading');
+
+        console.log("insert bookmark", bookmark);
 
         utils.ajax(configs.bookmarksUrl, "POST", bookmark, function(data) {
             $(btn).button('reset'); // 恢复按钮状态
@@ -244,6 +256,17 @@ var bookmarks = {
             $(btn).button('reset'); // 恢复按钮状态
             return page.inputDialoyMessage(textStatus);
         });
+    },
+
+    "edit": function() {
+        $("#confirm_dialog_title").html("编辑书签");
+        $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
+        $("#confirm_dialog_submit_btn").click(this.handlEdit);
+        $("#confirm_dialog").modal("show");
+    },
+
+    "handleEdit": function() {
+        
     }
 
 };
@@ -258,57 +281,40 @@ $(function() {
         return options.inverse(this);
     });
 
-    // set style
-    page.refresh();
-
-    // event binding
-    $("#bookmark_add_btn").click(bookmarks.add);
-    $("#bookamrkAddBtn").click(bookmarks.handleAdd);
-
-    // 【回调地狱】获取初始化数据
-    $.ajax(configs.initDataUrl, {
-        "type": "GET",
-        // "async": false,
-        "dataType": "json",
-        "success": function(respData, textStatus, jqXHR) {
-            if (respData.Status != 200) {
-                page.message(respData.Message);
-                throw "init error";
-            }
-
-            console.log("initData:", respData);
-
-            var data = respData.Data;
-            page.renderBookmark(data.Bookmark);
-            page.renderBookmarks(data.Bookmarks, data.Bookmark.Name);
-            page.renderPlugins(data.Plugins, data.Bookmark.Data.Plugin.Key);
-            global.plugins = data.Plugins;
-
-            // init plugins value
-            var pluginData = data.Bookmark.Data.Plugin.Data;
-            for (var i in pluginData) {
-                $("#plugin_" + i).val(pluginData[i]);
-            }
-
-            // event binding
-            $("#plugin_use_btn").click(plugins.use);
-
-            page.refresh();
-        },
-        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-            page.message("Request error: " + textStatus);
+    // 【回调地狱】获取初始化数据 initData
+    return utils.ajax(configs.initDataUrl, "GET", {}, function(respData) {
+        if (respData.Status != 200) {
+            page.message(respData.Message);
             throw "init error";
         }
-    });
 
-    return;
+        console.log("initData:", respData);
+
+        var data = respData.Data;
+        global.plugins = data.Plugins;
+
+        page.renderBookmarks(data.Bookmarks, data.Bookmark.Name);
+        page.renderPlugins(data.Plugins, data.Bookmark.Data.Plugin.Key);
+        page.renderData(data.Bookmark.Data);
+        page.refresh();
+
+        // event binding
+        $("#bookmark_use_btn").click(bookmarks.handleUse);
+        $("#bookmark_add_btn").click(bookmarks.add);
+        $("#bookmark_add_input").focus(page.inputDialoyMessageHide);
+        $("#bookamrkAddBtn").click(bookmarks.handleAdd);
+        $("#bookmark_edit_btn").click(bookmarks.edit);
+        $("#plugin_use_btn").click(plugins.use);
+
+    }, function(textStatus) {
+        page.message("Request error: " + textStatus);
+        throw "init error";
+    });
 
     // btnclick
     gOptionTpl = returnArgOptionTpl();
     $("#args_add_btn").click(argsAdd);
 
-    $("#bookmark_use_btn").click(handleBookmarkUse);
-    $("#bookmark_edit_btn").click(bookmarkEdit);
     $("#bookmark_drop_btn").click(bookmarkDrop);
     $("#bookmark_add_input").focus(hiddenErrAlert);
     $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn);
@@ -325,7 +331,7 @@ function pluginUse() {
     $.get(g.pluginUrl, {}, function(data) {
         var key = $("#plugin").selectpicker('val');
         var plugin = data.data.plugins[key];
-        renderPluginPanel(plugin);
+        renderPlugin(plugin);
         gPluginKey = key;
     }, "json");
 }
@@ -379,7 +385,7 @@ function renderData(data) {
     renderArgsOption(bookmark);
 
     var plugin = data.plugins[bookmark.plugin.key];
-    renderPluginPanel(plugin);
+    renderPlugin(plugin);
     renderPlugin(bookmark, plugin);
 }
 
@@ -439,7 +445,7 @@ function renderPlugin(bookmark, plugin) {
     }
 }
 
-function renderPluginPanel(plugin) {
+function renderPlugin(plugin) {
     var tpl = $("#plugin_panel_tpl").html();
     var html = juicer(tpl, plugin);
     $("#plugin_panel").html(html);
@@ -475,14 +481,6 @@ function renderBookmarkOptions(data) {
     $("#bookmark").html(html);
     $("#bookmark").selectpicker('val', data.selected);
     $('#bookmark').selectpicker("refresh");
-}
-
-function bookmarkEdit() {
-    $("#confirm_dialog_title").html("编辑书签");
-    $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
-    gConfirmDialogSubmitBtnAction = "edit";
-    $("#confirm_dialog").modal("show");
-
 }
 
 function bookmarkDrop() {

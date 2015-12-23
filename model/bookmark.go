@@ -39,15 +39,14 @@ func (this *bookmarkModel) GetCurrent() (bookmark Bookmark, err error) {
 	return
 }
 
-func (this *bookmarkModel) SetCurrent(name string) (err error) {
-	if err = BookmarksModel.validateBookmarkName(name); err != nil {
+func (this *bookmarkModel) SetCurrent(name string) (data Data, err error) {
+	if data, err = BookmarksModel.Get(name); err != nil {
 		return
 	}
 
-	_, err = BookmarksModel.Get(name)
-	if err != nil {
+	if err = this.Put(this.selected, name); err != nil {
 		return
 	}
 
-	return this.Put(this.selected, name)
+	return
 }
