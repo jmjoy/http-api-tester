@@ -78,6 +78,11 @@ func TestBookmarksCRUD(t *testing.T) {
 		t.Fatal("bookmark existd?")
 	}
 
+	_, has, err := BookmarkModel.GetCurrentKey()
+	if has {
+		t.Fatal("has selected bookmark?")
+	}
+
 	err = BookmarksModel.Delete(BOOKMARK_DEFAULT_NAME)
 	if err != errors.ErrBookmarkEditDefault {
 		t.Fatal("Can delete default?")

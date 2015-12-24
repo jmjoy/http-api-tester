@@ -177,7 +177,8 @@ var data = {
 var plugins = {
     "use": function() {
         var key = $("#plugin").selectpicker('val');
-        var plugin = global.plugins[key];
+        console.log("select plugin:", key);
+        var plugin = {"Key": key, "Data": {}};
         page.renderPlugin(plugin);
     }
 };
@@ -276,39 +277,64 @@ var bookmarks = {
             return page.message(e);
         }
 
-        console.log("update data", bookmark);
+        console.log("updateData", bookmark);
 
         // 安全禁用
         var btn = this;
         $(btn).button('loading');
 
-        // 联网
-        $.ajax({
-            "url":  g.bookmarkUrl,
-            "type":  "PUT",
-            "data":  JSON.stringify(bookmark),
-            "contentType":  "application/json",
-            "cache": false,
-            "dataType": "json",
-            "success":  function(data){
-                // 恢复按钮状态
-                $(btn).button('reset');
-                $("#confirm_dialog").modal('hide');
+        utils.ajax(configs.bookmarksUrl, "PUT", bookmark, function(data) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
 
-                if (data.status != 200) {
-                    alertMsg(data.msg);
-                    return false;
-                }
-
-                // 成功，无动作
-            },
-        "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-                // 恢复按钮状态
-                $(btn).button('reset');
-                $("#confirm_dialog").modal('hide');
-
-                alertMsg(textStatus);
+            if (data.Status != 200) {
+                return page.message(data.Message);
             }
+            // 成功，无动作
+
+        }, function(textStatus) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+            return page.message(textStatus);
+        });
+    },
+
+    "delete": function() {
+        $("#confirm_dialog_title").html("删除书签");
+        $("#confirm_dialog_text").html("您确定删除选定书签吗？");
+        $("#confirm_dialog_submit_btn").click(bookmarks.handleDelete);
+        $("#confirm_dialog").modal("show");
+    },
+
+    "handleDelete": function() {
+        var name = $("#bookmark").selectpicker("val");
+
+        // 安全禁用
+        var btn = this;
+        $(btn).button('loading');
+
+        var url = configs.bookmarksUrl + "?Name=" + name;
+        console.log(url);
+        utils.ajax(url, "DELETE", {}, function(data) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+
+            if (data.Status != 200) {
+                return page.message(data.Message);
+            }
+
+            // 成功
+            $("#bookmark option[value="+name+"]").remove();
+            $("#bookmark").selectpicker('refresh');
+
+        }, function(textStatus) {
+            // 恢复按钮状态
+            $(btn).button('reset');
+            $("#confirm_dialog").modal('hide');
+            return page.message(textStatus);
         });
     }
 
@@ -351,6 +377,7 @@ $(function() {
         $("#bookmark_add_input").focus(page.inputDialoyMessageHide);
         $("#bookamrkAddBtn").click(bookmarks.handleAdd);
         $("#bookmark_edit_btn").click(bookmarks.edit);
+        $("#bookmark_drop_btn").click(bookmarks.delete);
         $("#plugin_use_btn").click(plugins.use);
 
     }, function(textStatus) {
@@ -362,7 +389,6 @@ $(function() {
     gOptionTpl = returnArgOptionTpl();
     $("#args_add_btn").click(argsAdd);
 
-    $("#bookmark_drop_btn").click(bookmarkDrop);
     $("#bookmark_add_input").focus(hiddenErrAlert);
     $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn);
     $("#plugin_use_btn").click(pluginUse);
@@ -383,45 +409,6 @@ function pluginUse() {
     }, "json");
 }
 
-function handleBookmarkDelete() {
-    var key = $("#bookmark").selectpicker("val");
-    var inputs = {"key": key};
-
-    // 安全禁用
-    var btn = this;
-    $(btn).button('loading');
-
-    // 联网
-    $.ajax({
-        "url":  g.bookmarkUrl + "?key=" + key,
-        "type":  "DELETE",
-        "data":  JSON.stringify(bookmark),
-        "contentType":  "application/json",
-        "cache": false,
-        "dataType": "json",
-        "success":  function(data){
-            // 恢复按钮状态
-            $(btn).button('reset');
-            $("#confirm_dialog").modal('hide');
-
-            if (data.status != 200) {
-                alertMsg(data.msg);
-                return false;
-            }
-
-            // 成功
-            $("#bookmark option[value="+key+"]").remove();
-            $("#bookmark").selectpicker('refresh');
-        },
-       "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-            // 恢复按钮状态
-            $(btn).button('reset');
-            $("#confirm_dialog").modal('hide');
-
-            alertMsg(textStatus);
-        }
-    });
-}
 
 function renderData(data) {
     renderBookmarkOptions(data);
@@ -487,12 +474,6 @@ function renderBookmarkOptions(data) {
     $('#bookmark').selectpicker("refresh");
 }
 
-function bookmarkDrop() {
-    $("#confirm_dialog_title").html("删除书签");
-    $("#confirm_dialog_text").html("您确定删除选定书签吗？");
-    gConfirmDialogSubmitBtnAction = "drop";
-    $("#confirm_dialog").modal("show");
-}
 
 function clickConfirmDialogSubmitBtn () {
     switch (gConfirmDialogSubmitBtnAction) {

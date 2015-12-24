@@ -50,3 +50,7 @@ func (this *bookmarkModel) SetCurrent(name string) (data Data, err error) {
 
 	return
 }
+
+func (this *bookmarkModel) DeleteCurrent() (err error) {
+	return this.Delete(this.selected)
+}

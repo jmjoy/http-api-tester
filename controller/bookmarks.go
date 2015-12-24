@@ -47,7 +47,7 @@ func (this *BookmarksController) Upsert(typ model.UpsertType) (err error) {
 
 // Delete: delete bookmark
 func (this *BookmarksController) Delete() (err error) {
-	name := this.QueryGet("name")
+	name := this.QueryGet("Name")
 	if err = model.BookmarksModel.Delete(name); err != nil {
 		return
 	}

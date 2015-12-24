@@ -61,4 +61,17 @@ func TestBookmarkCRUD(t *testing.T) {
 	if err = BookmarksModel.Delete(testkey); err != nil {
 		panic(err)
 	}
+
+	if err = BookmarkModel.DeleteCurrent(); err != nil {
+		panic(err)
+	}
+
+	bookmark, err = BookmarkModel.GetCurrent()
+	if err != nil {
+		panic(err)
+	}
+
+	if !reflect.DeepEqual(bookmark.Data, DataDefault()) {
+		t.Fatal("not equal?")
+	}
 }

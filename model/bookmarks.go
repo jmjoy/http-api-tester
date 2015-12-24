@@ -54,7 +54,7 @@ func (this *bookmarksModel) Upsert(bookmark Bookmark, typ UpsertType) (err error
 	}
 
 	var data Data
-	has, err := this.Model.Get(bookmark.Name, data)
+	has, err := this.Model.Get(bookmark.Name, &data)
 	if err != nil {
 		return
 	}
@@ -84,7 +84,11 @@ func (this *bookmarksModel) Delete(name string) (err error) {
 		return
 	}
 
-	return this.Model.Delete(name)
+	if err = this.Model.Delete(name); err != nil {
+		return
+	}
+
+	return BookmarkModel.DeleteCurrent()
 }
 
 func (this *bookmarksModel) validateBookmarkName(name string) error {
