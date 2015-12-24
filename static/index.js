@@ -215,6 +215,7 @@ var dataProvider = {
             jf.doFormat(result.Test);           //格式化json
 
         } catch(e) {
+            throw e;
             var iFrame = $('<iframe style="width: 100%; min-height: 350px;"></iframe>');
             $("#result_test_panel").append(iFrame);
             var iFrameDoc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;

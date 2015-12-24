@@ -23,18 +23,13 @@ func (this *submitModel) Submit(data Data) (resp Response, err error) {
 		return
 	}
 
-	req, err := this.makeRequest(data)
-	if err != nil {
-		return
-	}
-
 	var response Response
 
-	if err = this.submitTest(req, &response); err != nil {
+	if err = this.submitTest(data, &response); err != nil {
 		return
 	}
 
-	if err = this.submitBenckmark(req, data.Bm, &response); err != nil {
+	if err = this.submitBenckmark(data, data.Bm, &response); err != nil {
 		return
 	}
 
@@ -66,12 +61,22 @@ func (this *submitModel) makeRequest(data Data) (*http.Request, error) {
 	return http.NewRequest(data.Method, u.String(), body)
 }
 
-func (this *submitModel) submitTest(req *http.Request, response *Response) error {
+func (this *submitModel) submitTest(data Data, response *Response) error {
+	req, err := this.makeRequest(data)
+	if err != nil {
+		return err
+	}
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+
+	req, err = this.makeRequest(data)
+	if err != nil {
+		return err
+	}
 
 	reqBodyBuf, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -90,9 +95,14 @@ func (this *submitModel) submitTest(req *http.Request, response *Response) error
 	return nil
 }
 
-func (this *submitModel) submitBenckmark(req *http.Request, bm Bm, response *Response) error {
+func (this *submitModel) submitBenckmark(data Data, bm Bm, response *Response) error {
 	if !bm.Switch {
 		return nil
+	}
+
+	req, err := this.makeRequest(data)
+	if err != nil {
+		return err
 	}
 
 	bodyBuf, err := ioutil.ReadAll(req.Body)
@@ -108,9 +118,14 @@ func (this *submitModel) submitBenckmark(req *http.Request, bm Bm, response *Res
 		n = bm.N
 	}
 	if bm.C >= 500 {
-		c = 1000
+		c = 500
 	} else {
 		n = bm.C
+	}
+
+	req, err = this.makeRequest(data)
+	if err != nil {
+		return err
 	}
 
 	text := (&boomer.Boomer{
