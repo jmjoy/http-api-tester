@@ -227,23 +227,23 @@
             <table class="table table-condensed">
             <tr>
                 <th>response status</th>
-                <td>${status}</td>
+                <td>{{Status}}</td>
             </tr>
             <tr>
                 <th>reqeust url</th>
-                <td>${requrl}</td>
+                <td>{{ReqUrl}}</td>
             </tr>
-            {@if reqBody != ""}
+            {{#neq ReqBody ""}}
             <tr>
                 <th>reqeust body</th>
-                <td>${reqBody}</td>
+                <td>{{ReqBody}}</td>
             </tr>
-            {@/if}
+            {{/neq}}
             </table>
         </div>
-        {@if bm}
-        <pre id="result_bm_panel">压测： ${bm}</pre>
-        {@/if}
+        {{#if Bm}}
+        <pre id="result_bm_panel">压测： {{Bm}}</pre>
+        {{/if}}
     </script>
 
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>

@@ -1,4 +1,5 @@
 var configs = {
+    "indexUrl":     "/",
     "initDataUrl":  "/?act=initData",
     "bookmarkUrl":  "/bookmark",
     "bookmarksUrl": "/bookmarks"
@@ -38,7 +39,8 @@ var templates = {
     "argsOptions":     utils.tplCompile("args_tpl"),
     "pluginOptions":   utils.tplCompile("plugin_option_tpl"),
     "pluginPanel":     utils.tplCompile("plugin_panel_tpl"),
-    "bookmarkOptions": utils.tplCompile("bookmark_option_tpl")
+    "bookmarkOptions": utils.tplCompile("bookmark_option_tpl"),
+    "result":          utils.tplCompile("result_tpl")
 };
 
 var page = {
@@ -129,7 +131,7 @@ var args = {
     }
 };
 
-var data = {
+var dataProvider = {
     "get": function() {
         var data = {};
 
@@ -170,6 +172,60 @@ var data = {
         }
 
         return data;
+    },
+
+    "submit": function() {
+        var data = null;
+        try {
+            data = dataProvider.get();
+        } catch(e) {
+            return page.message(e);
+        }
+        console.log("request data:", data);
+
+        var btn = this;
+        $(btn).button('loading');
+
+        utils.ajax(configs.indexUrl, "POST", data, function(respData) {
+            $(btn).button('reset');
+
+            console.log("response data:", respData);
+            if (respData.Status != 200) {
+                return page.message(respData.Message);
+            }
+
+            // 成功
+            dataProvider.renderResult(respData.Data);
+
+        }, function(textStatus) {
+            $(btn).button('reset');
+            return page.message(textStatus);
+        });
+    },
+
+    "renderResult": function(result) {
+        var html = templates.result(result);
+        $("#result_panel").html(html);
+
+        try {
+            var div = $('<div></div>');
+            $("#result_test_panel").append(div);
+            var options = {"dom" : div};
+            var jf = new JsonFormater(options); //创建对象
+            jf.doFormat(result.Test);           //格式化json
+
+        } catch(e) {
+            var iFrame = $('<iframe style="width: 100%; min-height: 350px;"></iframe>');
+            $("#result_test_panel").append(iFrame);
+            var iFrameDoc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
+            iFrameDoc.write(result.Test);
+            iFrameDoc.close();
+        }
+
+        $("#result_new_tab_btn").click(function() {
+            var newWindowObi=window.open("在新标签中浏览");
+            newWindowObi.document.write(result.Test);
+        });
     }
 
 };
@@ -209,7 +265,7 @@ var bookmarks = {
     "add": function() {
         // validate data
         try {
-            data.get();
+            dataProvider.get();
         } catch (e) {
             return page.message(e);
         }
@@ -227,7 +283,7 @@ var bookmarks = {
 
         var bookmark = {};
         try {
-            bookmark.Data = data.get();
+            bookmark.Data = dataProvider.get();
             bookmark.Name = name;
         } catch(e) {
             return page.inputDialoyMessage(e);
@@ -270,7 +326,7 @@ var bookmarks = {
     "handleEdit": function() {
         var bookmark = {};
         try {
-            bookmark.Data = data.get();
+            bookmark.Data = dataProvider.get();
             bookmark.Name = $("#bookmark").selectpicker('val');
         } catch(e) {
             $("#confirm_dialog").modal('hide');
@@ -346,9 +402,15 @@ $(function() {
     if (global.environ != "dev") {
         console.log = function() {};
     }
-
     Handlebars.registerHelper('eq', function(v1, v2, options) {
         if(v1 == v2) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    });
+
+    Handlebars.registerHelper('neq', function(v1, v2, options) {
+        if(v1 != v2) {
             return options.fn(this);
         }
         return options.inverse(this);
@@ -363,12 +425,12 @@ $(function() {
 
         console.log("initData:", respData);
 
-        var data = respData.Data;
-        global.plugins = data.Plugins;
+        var bookmarkData = respData.Data;
+        global.plugins = bookmarkData.Plugins;
 
-        page.renderBookmarks(data.Bookmarks, data.Bookmark.Name);
-        page.renderPlugins(data.Plugins, data.Bookmark.Data.Plugin.Key);
-        page.renderData(data.Bookmark.Data);
+        page.renderBookmarks(bookmarkData.Bookmarks, bookmarkData.Bookmark.Name);
+        page.renderPlugins(bookmarkData.Plugins, bookmarkData.Bookmark.Data.Plugin.Key);
+        page.renderData(bookmarkData.Bookmark.Data);
         page.refresh();
 
         // event binding
@@ -379,6 +441,7 @@ $(function() {
         $("#bookmark_edit_btn").click(bookmarks.edit);
         $("#bookmark_drop_btn").click(bookmarks.delete);
         $("#plugin_use_btn").click(plugins.use);
+        $("#submit_btn").click(dataProvider.submit);
 
     }, function(textStatus) {
         page.message("Request error: " + textStatus);
@@ -392,7 +455,6 @@ $(function() {
     $("#bookmark_add_input").focus(hiddenErrAlert);
     $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn);
     $("#plugin_use_btn").click(pluginUse);
-    $("#submit_btn").click(handleSubmit);
 
     // render data
     gData = getInitData();
@@ -475,97 +537,8 @@ function renderBookmarkOptions(data) {
 }
 
 
-function clickConfirmDialogSubmitBtn () {
-    switch (gConfirmDialogSubmitBtnAction) {
-    case 'edit':
-        handleBookmarkEdit();
-        break;
-
-    case 'drop':
-        handleBookmarkDelete();
-        break;
-    }
+function handleSubmit() {
 }
 
-function argsAdd() {
-    $("#args_body").append(gOptionTpl);
-    $('.switch[type="checkbox"]').bootstrapSwitch();
+function renderResult(result) {
 }
-
-
-function returnArgOptionTpl() {
-    var tpl = $("#args_tpl").html();
-    var empty = {"args":[{
-        "key":    "",
-        "value":  "",
-        "method": "GET",
-    }]};
-    return juicer(tpl, empty);
-}
-
-// function handleSubmit() {
-//     var data = null;
-//     try {
-//         data = getRequestData();
-//     } catch(e) {
-//         alertMsg(e);
-//         return;
-//     }
-
-//     var btn = this;
-//     $(btn).button('loading');
-
-// 	$.ajax({
-//         'url': g.submitUrl,
-// 		'data': JSON.stringify(data),
-// 		'type': 'POST',
-// 		'processData': false,
-// 		'contentType': 'application/json',
-// 		'dataType':	'json',
-// 		'success':	function(data) {
-//             $(btn).button('reset');
-
-//             if (data.status != 200) {
-//                 alertMsg(data.msg);
-//                 return false;
-//             }
-
-//             // 成功
-//             renderResult(data.data);
-// 		},
-// 		'error':	function (XMLHttpRequest, textStatus, errorThrown) {
-//             $(btn).button('reset');
-//             alertMsg(e);
-// 		}
-// 	});
-
-//     return false;
-// }
-
-// function renderResult(result) {
-//     gResultTest = result.test;
-
-//     var tpl = $("#result_tpl").html();
-//     var html = juicer(tpl, result);
-//     $("#result_panel").html(html);
-
-//     try {
-//         var div = $('<div></div>');
-//         $("#result_test_panel").append(div);
-//         var options = {"dom" : div};
-//         var jf = new JsonFormater(options); //创建对象
-//         jf.doFormat(gResultTest);    //格式化json
-
-//     } catch(e) {
-//         var iFrame = $('<iframe style="width: 100%; min-height: 350px;"></iframe>');
-//         $("#result_test_panel").append(iFrame);
-//         var iFrameDoc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
-//         iFrameDoc.write(gResultTest);
-//         iFrameDoc.close();
-//     }
-
-//     $("#result_new_tab_btn").click(function() {
-//         var newWindowObi=window.open("在新标签中浏览");
-//         newWindowObi.document.write(gResultTest);
-//     });
-// }
