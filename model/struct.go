@@ -134,12 +134,18 @@ func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
 	return
 }
 
-func (this *RequestMaker) NewRequest() (*http.Request, error) {
-	return http.NewRequest(
+func (this *RequestMaker) NewRequest() (request *http.Request, err error) {
+	request, err = http.NewRequest(
 		this.Method,
 		this.Url.String(),
 		strings.NewReader(this.PostForm.Encode()),
 	)
+	if err != nil {
+		return
+	}
+
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return
 }
 
 var pluginPool = make(map[string]PluginInfo)
