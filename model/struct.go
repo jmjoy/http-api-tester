@@ -2,7 +2,10 @@ package model
 
 import (
 	goerrors "errors"
+	"net/http"
 	"net/url"
+
+	"strings"
 
 	"github.com/jmjoy/http-api-tester/errors"
 )
@@ -94,6 +97,49 @@ type Response struct {
 	Status  string
 	Test    string
 	Bm      string
+}
+
+type RequestMaker struct {
+	Method   string
+	Url      *url.URL
+	PostForm url.Values
+}
+
+func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
+	u, err := url.Parse(data.Url)
+	if err != nil {
+		return
+	}
+
+	querys := u.Query()
+	forms := make(url.Values)
+
+	for _, arg := range data.Args {
+		switch arg.Method {
+		case "GET":
+			querys.Add(arg.Key, arg.Value)
+
+		case "POST":
+			forms.Add(arg.Key, arg.Value)
+		}
+	}
+
+	u.RawQuery = querys.Encode()
+
+	reqMaker = &RequestMaker{
+		Method:   data.Method,
+		Url:      u,
+		PostForm: forms,
+	}
+	return
+}
+
+func (this *RequestMaker) NewRequest() (*http.Request, error) {
+	return http.NewRequest(
+		this.Method,
+		this.Url.String(),
+		strings.NewReader(this.PostForm.Encode()),
+	)
 }
 
 var pluginPool = make(map[string]PluginInfo)
