@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/jmjoy/boom/boomer"
+	"github.com/jmjoy/boomer"
 )
 
 var SubmitModel = &submitModel{}
@@ -79,7 +79,7 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 	if bm.C >= 500 {
 		c = 500
 	} else {
-		n = bm.C
+		c = bm.C
 	}
 
 	req, err := reqMaker.NewRequest()
@@ -87,7 +87,7 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 		return err
 	}
 
-	text := (&boomer.Boomer{
+	result := (&boomer.Boomer{
 		Request:     req,
 		RequestBody: reqMaker.PostForm.Encode(),
 		N:           int(n),
@@ -95,7 +95,12 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 		Timeout:     35,
 	}).Run()
 
-	response.Bm = text
+	response.Bm = formatReportResult(result)
 
 	return nil
+}
+
+func formatReportResult(result *boomer.ReportResult) string {
+	// todo
+	return "hello world"
 }

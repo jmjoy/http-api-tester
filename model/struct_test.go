@@ -16,6 +16,7 @@ func TestRequestMaker(t *testing.T) {
 		panic(err)
 	}
 	t.Log("request content-type:", req.Header.Get("Content-Type"))
+
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)

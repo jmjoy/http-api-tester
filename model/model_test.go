@@ -15,6 +15,9 @@ var testData0 Data
 
 func TestMain(m *testing.M) {
 	dbPath := "./model_test.db"
+	if _, err := os.Stat(dbPath); err == nil {
+		os.Remove(dbPath)
+	}
 	defer os.Remove(dbPath)
 
 	// init db
@@ -39,7 +42,7 @@ func TestMain(m *testing.M) {
 
 func initData() {
 	testData0 = Data{
-		Method: "GET",
+		Method: "POST",
 		Url:    testSrv.URL,
 		Args: []Arg{
 			Arg{"k1", "v1", "GET"},

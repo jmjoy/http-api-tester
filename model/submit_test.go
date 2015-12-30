@@ -23,3 +23,22 @@ func TestSubmitTest(t *testing.T) {
 		t.Fatal("response not equal!")
 	}
 }
+
+func TestSubmitBenckmark(t *testing.T) {
+	testData1 := testData0
+	testData1.Bm = Bm{
+		Switch: true,
+		N:      10,
+		C:      1,
+	}
+
+	resp, err := SubmitModel.Submit(testData1)
+	if err != nil {
+		panic(err)
+	}
+
+	t.Log(resp.Bm)
+	if resp.Bm == "" {
+		t.Fatal("no benchmark data?")
+	}
+}
