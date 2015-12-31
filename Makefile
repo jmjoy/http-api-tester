@@ -1,5 +1,5 @@
 http-api-tester:
-	go build && ./http-api-tester
+	go build
 
 create-view:
 	file2string -pkg text -o text/text.go -var Text \
