@@ -7,7 +7,7 @@ var configs = {
 
 // TODO Move all global variables to this global object
 var global = {
-    "environ": "dev",
+    "environ": "prod",
     "plugins": {}
 };
 
@@ -29,7 +29,11 @@ var utils = {
                 successCallback(data);
             },
             "error":  function(XMLHttpRequest, textStatus, errorThrown) {
-                errorCallback(textStatus);
+                console.log(XMLHttpRequest, textStatus, errorThrown);
+                var status = XMLHttpRequest.status;
+                var statusText = XMLHttpRequest.statusText;
+                var responseText = XMLHttpRequest.responseText;
+                errorCallback("[" +status + "] [" + statusText + "] " + responseText);
             }
         });
     }
@@ -64,6 +68,8 @@ var page = {
     "renderBookmarks": function(bookmarks, bookmarkName) {
         var html = templates.bookmarkOptions({"Bookmarks": bookmarks});
         $("#bookmark").html(html);
+
+        $("#bookmark").selectpicker();
         $("#bookmark").selectpicker('val', bookmarkName);
         $('#bookmark').selectpicker("refresh");
     },
@@ -71,6 +77,7 @@ var page = {
     "renderPlugin": function(plugin) {
         var html = templates.pluginPanel(global.plugins[plugin.Key]);
         $("#plugin_panel").html(html);
+        $("#plugin").selectpicker();
         $("#plugin").selectpicker('val', plugin.Key);
 
         // init plugins value
@@ -81,6 +88,9 @@ var page = {
     },
 
     "renderPlugins": function(plugins, pluginKey) {
+        console.log("Plugins:", plugins);
+        console.log("Plugin key:", pluginKey);
+
         var html = templates.pluginOptions({"Plugins": plugins});
         $("#plugin").html(html);
     },
@@ -93,9 +103,34 @@ var page = {
         return $("#args_body").append(html);
     },
 
+    "renderResult": function(result) {
+        var html = templates.result(result);
+        $("#result_panel").html(html);
+
+        try {
+            var div = $('<div></div>');
+            $("#result_test_panel").append(div);
+            var options = {"dom" : div};
+            var jf = new JsonFormater(options); //创建对象
+            jf.doFormat(result.Test);           //格式化json
+
+        } catch(e) {
+            var iFrame = $('<iframe style="width: 100%; min-height: 350px;"></iframe>');
+            $("#result_test_panel").append(iFrame);
+            var iFrameDoc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
+            iFrameDoc.write(result.Test);
+            iFrameDoc.close();
+        }
+
+        $("#result_new_tab_btn").click(function() {
+            var newWindowObi=window.open("在新标签中浏览");
+            newWindowObi.document.write(result.Test);
+        });
+    },
+
     "refresh": function() {
         $('.switch[type="checkbox"]').bootstrapSwitch();
-        $('.selectpicker').selectpicker();
+        $('.selectpicker').selectpicker("refresh");
         $('#plugin').selectpicker("refresh");
     },
 
@@ -195,37 +230,11 @@ var dataProvider = {
             }
 
             // 成功
-            dataProvider.renderResult(respData.Data);
+            page.renderResult(respData.Data);
 
         }, function(textStatus) {
             $(btn).button('reset');
             return page.message(textStatus);
-        });
-    },
-
-    "renderResult": function(result) {
-        var html = templates.result(result);
-        $("#result_panel").html(html);
-
-        try {
-            var div = $('<div></div>');
-            $("#result_test_panel").append(div);
-            var options = {"dom" : div};
-            var jf = new JsonFormater(options); //创建对象
-            jf.doFormat(result.Test);           //格式化json
-
-        } catch(e) {
-            throw e;
-            var iFrame = $('<iframe style="width: 100%; min-height: 350px;"></iframe>');
-            $("#result_test_panel").append(iFrame);
-            var iFrameDoc = iFrame[0].contentDocument || iFrame[0].contentWindow.document;
-            iFrameDoc.write(result.Test);
-            iFrameDoc.close();
-        }
-
-        $("#result_new_tab_btn").click(function() {
-            var newWindowObi=window.open("在新标签中浏览");
-            newWindowObi.document.write(result.Test);
         });
     }
 
@@ -308,6 +317,7 @@ var bookmarks = {
             var html = templates.bookmarkOptions(renderData);
             $('#bookmark').append(html);
             $('#add_dialog').modal('hide');
+            $('#bookmark').selectpicker();
             $("#bookmark").selectpicker('val', bookmark.Name);
             $('#bookmark').selectpicker("refresh");
 
@@ -448,98 +458,4 @@ $(function() {
         page.message("Request error: " + textStatus);
         throw "init error";
     });
-
-    // btnclick
-    gOptionTpl = returnArgOptionTpl();
-    $("#args_add_btn").click(argsAdd);
-
-    $("#bookmark_add_input").focus(hiddenErrAlert);
-    $("#confirm_dialog_submit_btn").click(clickConfirmDialogSubmitBtn);
-    $("#plugin_use_btn").click(pluginUse);
-
-    // render data
-    gData = getInitData();
-    gPluginKey = gData.bookmarks[gData.selected].plugin.key;
-    renderData(gData);
 });
-
-function pluginUse() {
-    $.get(g.pluginUrl, {}, function(data) {
-        var key = $("#plugin").selectpicker('val');
-        var plugin = data.data.plugins[key];
-        renderPlugin(plugin);
-        gPluginKey = key;
-    }, "json");
-}
-
-
-function renderData(data) {
-    renderBookmarkOptions(data);
-    renderPluginOptions(data);
-
-    var bookmark = data.bookmarks[data.selected];
-    renderContent(bookmark);
-    renderArgsOption(bookmark);
-
-    var plugin = data.plugins[bookmark.plugin.key];
-    renderPlugin(plugin);
-    renderPlugin(bookmark, plugin);
-}
-
-function handleBookmarkEdit() {
-}
-
-function hiddenErrAlert() {
-    $("#bookmark_add_err").addClass("hidden");
-}
-
-function renderPlugin(bookmark, plugin) {
-    for (var i in plugin.fields) {
-        $("#plugin_"+i).val(bookmark.plugin.data[i]);
-    }
-}
-
-function renderPlugin(plugin) {
-    var tpl = $("#plugin_panel_tpl").html();
-    var html = juicer(tpl, plugin);
-    $("#plugin_panel").html(html);
-}
-
-function renderArgsOption(bookmark) {
-    var tpl = $("#args_tpl").html();
-    var html = juicer(tpl, bookmark);
-    $("#args_body").html(html);
-    $('.switch[type="checkbox"]').bootstrapSwitch();
-}
-
-function renderContent(bookmark) {
-    $('#method').bootstrapSwitch('state', bookmark.method=="GET");
-    $('#url').val(bookmark.url);
-
-    $('#bm_switch').bootstrapSwitch('state', bookmark.bm.switch);
-    $('#bm_n').val(bookmark.bm.n);
-    $('#bm_c').val(bookmark.bm.c);
-}
-
-function renderPluginOptions(data) {
-    var tpl = $("#plugin_option_tpl").html();
-    var html = juicer(tpl, data);
-    $("#plugin").html(html);
-    $("#plugin").selectpicker('val', data.bookmarks[data.selected].plugin.key);
-    $('#plugin').selectpicker("refresh");
-}
-
-function renderBookmarkOptions(data) {
-    var tpl = $("#bookmark_option_tpl").html();
-    var html = juicer(tpl, data);
-    $("#bookmark").html(html);
-    $("#bookmark").selectpicker('val', data.selected);
-    $('#bookmark').selectpicker("refresh");
-}
-
-
-function handleSubmit() {
-}
-
-function renderResult(result) {
-}

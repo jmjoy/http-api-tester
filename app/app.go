@@ -101,7 +101,10 @@ func HandleRestful(pattern string, fn func() IController) {
 				http.Error(w, message, status)
 
 			default: // system error
-				panic(err)
+				status := http.StatusNotAcceptable
+				message := err.Error()
+				Log(LOG_LV_FAIL, fmt.Sprintf("<%d> %s (%s)", status, message, r.URL))
+				http.Error(w, message, status)
 			}
 		}
 

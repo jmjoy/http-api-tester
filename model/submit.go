@@ -1,8 +1,12 @@
 package model
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
+
+	"bytes"
 
 	"github.com/jmjoy/boomer"
 )
@@ -70,16 +74,12 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 	}
 
 	// limit N, C reduce server pressure.
-	var n, c uint
+	var n, c = bm.N, bm.C
 	if bm.N >= 1000 {
 		n = 1000
-	} else {
-		n = bm.N
 	}
 	if bm.C >= 500 {
 		c = 500
-	} else {
-		c = bm.C
 	}
 
 	req, err := reqMaker.NewRequest()
@@ -101,6 +101,40 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 }
 
 func formatReportResult(result *boomer.ReportResult) string {
-	// todo
-	return "hello world"
+	buffer := new(bytes.Buffer)
+
+	buffer.WriteString("\nSummary:\n")
+	buffer.WriteString(fmt.Sprintf("  Total:\t%4.4f secs.\n", result.Summary.TotalSecond))
+	buffer.WriteString(fmt.Sprintf("  Slowest:\t%4.4f secs.\n", result.Summary.SlowestSecond))
+	buffer.WriteString(fmt.Sprintf("  Fastest:\t%4.4f secs.\n", result.Summary.FastestSecond))
+	buffer.WriteString(fmt.Sprintf("  Average:\t%4.4f secs.\n", result.Summary.AverageSecond))
+	buffer.WriteString(fmt.Sprintf("  Requests/sec:\t%4.4f\n", result.Summary.RequestsPerSec))
+	if result.Summary.TotalSize > 0 {
+		buffer.WriteString(fmt.Sprintf("  Total Data Received:\t%d bytes.\n", result.Summary.TotalSize))
+		buffer.WriteString(fmt.Sprintf("  Response Size per Request:\t%d bytes.\n", result.Summary.SizePerRequest))
+	}
+
+	buffer.WriteString("\nStatus code distribution:\n")
+	for code, num := range result.StatusCodeDist {
+		buffer.WriteString(fmt.Sprintf("  [%d]\t%d responses\n", code, num))
+	}
+
+	buffer.WriteString("\nResponse time histogram:\n")
+	for _, v := range result.ResponseTimes {
+		buffer.WriteString(fmt.Sprintf("  %4.3f [%v]\t|%v\n", v.Second, v.Count, strings.Repeat("*", v.BarLen)))
+	}
+
+	buffer.WriteString("\nLatency distribution:\n")
+	for k, v := range result.LatencyDist {
+		buffer.WriteString(fmt.Sprintf("  %v%% in %4.4f secs.\n", k, v))
+	}
+
+	if len(result.ErrorDist) > 0 {
+		buffer.WriteString("\nError distribution:\n")
+		for err, num := range result.ErrorDist {
+			buffer.WriteString(fmt.Sprintf("  [%d]\t%s\n", num, err))
+		}
+	}
+
+	return buffer.String()
 }
