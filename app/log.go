@@ -1,9 +1,7 @@
 package app
 
 import (
-	"fmt"
-
-	"github.com/ttacon/chalk"
+	"github.com/fatih/color"
 )
 
 type LogLevel int
@@ -15,26 +13,25 @@ const (
 )
 
 func Log(lv LogLevel, e interface{}) {
-	var color chalk.Color
+	var attr color.Attribute
 	var tip string
 
 	switch lv {
 	case LOG_LV_SUCC:
-		color = chalk.Green
+		attr = color.FgGreen
 		tip = "SUCC"
 
 	case LOG_LV_INFO:
-		color = chalk.Cyan
+		attr = color.FgCyan
 		tip = "INFO"
 
 	case LOG_LV_FAIL:
-		color = chalk.Red
+		attr = color.FgRed
 		tip = "FAIL"
 
 	default:
 		panic("No this log level")
 	}
 
-	message := color.Color(fmt.Sprintf("[%s] %s", tip, e))
-	fmt.Println(message)
+	color.New(attr).Printf("[%s] %s\n", tip, e)
 }

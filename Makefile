@@ -1,6 +1,3 @@
-http-api-tester:
-	go build
-
 create-view:
 	file2string -pkg text -o text/text.go -var Text \
 		static/bower_components/bootstrap/dist/**/*.min.* \
