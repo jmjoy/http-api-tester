@@ -38,7 +38,7 @@ Just one file ~! (Since v0.5)
     
 ## TODO
 
-- [ ] Support all http request method
+- [x] Support all http request method
 - [ ] Support more request body format
 - [x] Adjust config file
 - [ ] Support history list

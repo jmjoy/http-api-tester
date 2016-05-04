@@ -77,18 +77,44 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <table class="table table-bordered table-condensed">
-                    <thead>
-                        <th>键：</th>
-                        <th>值：</th>
-                        <th width="20%">类型：</th>
-                        <th width="10%"><button type="button" id="args_add_btn" class="btn btn-sm btn-block btn-info" onclick="args.add()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></th>
-                    </thead>
-                    <tbody id="args_body">
-                    </tbody>
-                </table>
+
+            <div class="tabbable panel panel-default">
+                <div class="col-xs-2 content-left" id="enctype_left">
+                    <strong>Content-Type: &nbsp;&nbsp;</strong>
+                </div>
+                <div class="col-xs-10">
+                    <ul id="enctype" class="nav nav-tabs">
+                    <li><a href="#enctype_x_www" data-toggle="tab">application/x-www-form-urlencoded</a></li>
+                    <li><a href="#enctype_json" data-toggle="tab">text/json</a></li>
+                    <li><a href="#enctype_plain" data-toggle="tab">text/plain</a></li>
+                    </ul>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="enctype_x_www">
+                        <table class="table table-bordered table-condensed">
+                            <thead>
+                                <th>键：</th>
+                                <th>值：</th>
+                                <th width="20%">类型：</th>
+                                <th width="10%"><button type="button" id="args_add_btn" class="btn btn-sm btn-block btn-info" onclick="args.add()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></th>
+                            </thead>
+                            <tbody id="args_body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade in " id="enctype_json">
+                        <textarea id="enctype_json_content" class="form-control" rows="6"></textarea>
+                    </div>
+                    <div class="tab-pane fade in " id="enctype_plain">
+                        <textarea id="enctype_plain_content" class="form-control" rows="6"></textarea>
+                    </div>
+                </div>
             </div>
+
+
+
 
             <div class="panel panel-default">
                 <div class="panel-body">

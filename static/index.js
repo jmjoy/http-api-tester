@@ -7,8 +7,9 @@ var configs = {
 
 // TODO Move all global variables to this global object
 var global = {
-    "environ": "prod",
-    "plugins": {}
+    "environ": "dev",
+    "plugins": {},
+    "currentEnctype": "x_www"
 };
 
 var utils = {
@@ -48,6 +49,15 @@ var templates = {
 };
 
 var page = {
+    "initComponents": function() {
+        $('#enctype a').click(function(e) {
+            e.preventDefault();
+            global.currentEnctype = $(e.target).attr('href').substr(9);
+            $(this).tab('show');
+        });
+        $('#enctype a:first').tab('show');
+    },
+
     "renderData": function(data) {
         // url
         // $('#method').bootstrapSwitch('state', data.Method=="GET");
@@ -66,6 +76,8 @@ var page = {
 
         // plugin
         this.renderPlugin(data.Plugin);
+
+        // enctype TODO
     },
 
     "renderBookmarks": function(bookmarks, bookmarkName) {
@@ -182,6 +194,7 @@ var dataProvider = {
         data.Bm.N =  parseInt($.trim($("#bm_n").val()));
         data.Bm.C =  parseInt($.trim($("#bm_c").val()));
 
+        // args
         data.Args = [];
         $("#args_body tr").each(function() {
             var key = $.trim($(this).find(".arg-key").val());
@@ -195,6 +208,7 @@ var dataProvider = {
             });
         });
 
+        // plugin
         data.Plugin = {};
         data.Plugin.Data = {};
         data.Plugin.Key = $("#plugin").val();
@@ -209,6 +223,15 @@ var dataProvider = {
         if (data.Bm.N <= 0 || data.Bm.C <= 0) {
             throw "压测数据必须是正整数";
         }
+
+        // enctype
+        data.Enctype = global.currentEnctype;
+
+        // json
+        data.JsonContent = $("#enctype_json_content").val();
+
+        // plain
+        data.PlainContent = $("#enctype_plain_content").val();
 
         return data;
     },
@@ -431,6 +454,9 @@ $(function() {
         }
         return options.inverse(this);
     });
+
+    // init components
+    page.initComponents();
 
     // 【回调地狱】获取初始化数据 initData
     return utils.ajax(configs.initDataUrl, "GET", {}, function(respData) {

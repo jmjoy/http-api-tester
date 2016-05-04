@@ -40,11 +40,14 @@ type Plugin struct {
 
 // Submit Data
 type Data struct {
-	Method string
-	Url    string
-	Args   []Arg
-	Bm     Bm
-	Plugin Plugin
+	Method       string
+	Url          string
+	Args         []Arg
+	Bm           Bm
+	Plugin       Plugin
+	Enctype      string
+	JsonContent  string
+	PlainContent string
 }
 
 func DataDefault() Data {
@@ -100,9 +103,10 @@ type Response struct {
 }
 
 type RequestMaker struct {
-	Method   string
-	Url      *url.URL
-	PostForm url.Values
+	Method  string
+	Url     *url.URL
+	Enctype string
+	Body    string
 }
 
 func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {

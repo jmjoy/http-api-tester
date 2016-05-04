@@ -78,3 +78,12 @@ td {
     margin: 5px auto;
     width: 100%;
 }
+
+.margin-right-sm {
+    margin-right: 4px;
+}
+
+#enctype_left {
+    height: 41px;
+    line-height: 41px;
+}
