@@ -17,6 +17,7 @@
     "bootstrap": "~3.3.5",
     "bootstrap-select": "~1.7.5",
     "bootstrap-switch": "~3.3.2",
-    "handlebars": "~4.0.5"
+    "handlebars": "~4.0.5",
+    "jquery.hotkeys": "jQuery.Hotkeys#^0.2.0"
   }
 }

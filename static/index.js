@@ -51,12 +51,18 @@ var templates = {
 
 var page = {
     "initComponents": function() {
+        // enctype
         $('#enctype a').click(function(e) {
             e.preventDefault();
             global.currentEnctype = $(e.target).attr('href').substr(9);
             $(this).tab('show');
         });
         $('#enctype a:first').tab('show');
+
+        // hotkeys
+        $(document).bind('keydown', 'Ctrl+return', function() {
+            $("#submit_btn").click();
+        });
     },
 
     "renderData": function(data) {
@@ -69,6 +75,9 @@ var page = {
 
         // args
         this.renderArgs(data.Args, true);
+
+        // headers
+        this.renderHeaders(data.Headers, true);
 
         // bm
         $('#bm_switch').bootstrapSwitch('state', data.Bm.Switch);
@@ -120,6 +129,14 @@ var page = {
             return $("#args_body").html(html);
         }
         return $("#args_body").append(html);
+    },
+
+    "renderHeaders": function(headers, isReset) {
+        var html = templates.headersOptions({"Headers": headers});
+        if (isReset) {
+            return $("#headers_body").html(html);
+        }
+        return $("#headers_body").append(html);
     },
 
     "renderResult": function(result) {
@@ -225,6 +242,21 @@ var dataProvider = {
                 "Value":   $.trim($(this).find(".arg-value").val()),
                 "Method":  $(this).find(".arg-method").bootstrapSwitch("state") ? "GET" : "POST"
             });
+            return true;
+        });
+
+        // headers
+        data.Headers = [];
+        $("#headers_body tr").each(function() {
+            var key = $.trim($(this).find(".header-key").val());
+            if (key == "") {
+                return false;
+            }
+            data.Headers.push({
+                "Key":     key,
+                "Value":   $.trim($(this).find(".header-value").val())
+            });
+            return true;
         });
 
         // plugin
@@ -377,6 +409,7 @@ var bookmarks = {
     "edit": function() {
         $("#confirm_dialog_title").html("编辑书签");
         $("#confirm_dialog_text").html("您确定要将当前内容替换到选定书签吗？");
+        $("#confirm_dialog_submit_btn").unbind();
         $("#confirm_dialog_submit_btn").click(bookmarks.handleEdit);
         $("#confirm_dialog").modal("show");
     },
@@ -418,6 +451,7 @@ var bookmarks = {
     "delete": function() {
         $("#confirm_dialog_title").html("删除书签");
         $("#confirm_dialog_text").html("您确定删除选定书签吗？");
+        $("#confirm_dialog_submit_btn").unbind();
         $("#confirm_dialog_submit_btn").click(bookmarks.handleDelete);
         $("#confirm_dialog").modal("show");
     },

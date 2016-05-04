@@ -28,7 +28,7 @@
             <a class="navbar-brand" href="#">接口测试工具</a>
 
             <ul class="nav navbar-nav navbar-left">
-                <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试</button></li>
+                <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试 (Ctrl+Enter)</button></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -248,10 +248,10 @@
         {{#each Headers}}
         <tr>
             <td>
-                <input type="text" class="form-control arg-key" value="{{Key}}" />
+                <input type="text" class="form-control header-key" value="{{Key}}" />
             </td>
             <td>
-                <input type="text" class="form-control arg-value" value="{{Value}}" />
+                <input type="text" class="form-control header-value" value="{{Value}}" />
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-block btn-danger" onclick="headers.remove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
@@ -314,6 +314,7 @@
     <script src="/static/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="/static/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <script src="/static/bower_components/handlebars/handlebars.min.js"></script>
+    <script src="/static/bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>
     <script src="/static/json-formater.js"></script>
     <script src="/static/index.js"></script>
 

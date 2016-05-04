@@ -26,6 +26,12 @@ type Arg struct {
 	Method string
 }
 
+// Header
+type Header struct {
+	Key   string
+	Value string
+}
+
 // Benchmark data
 type Bm struct {
 	Switch bool
@@ -43,6 +49,7 @@ type Data struct {
 	Method       string
 	Url          string
 	Args         []Arg
+	Headers      []Header
 	Bm           Bm
 	Plugin       Plugin
 	Enctype      string
@@ -52,8 +59,9 @@ type Data struct {
 
 func DataDefault() Data {
 	return Data{
-		Method: "GET",
-		Args:   []Arg{},
+		Method:  "GET",
+		Args:    []Arg{},
+		Headers: []Header{},
 		Bm: Bm{
 			N: 100,
 			C: 10,
@@ -107,6 +115,7 @@ type RequestMaker struct {
 	Url         *url.URL
 	ContentType string
 	Body        string
+	Headers     []Header
 }
 
 func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
@@ -153,6 +162,7 @@ func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
 		Url:         u,
 		ContentType: contentType,
 		Body:        body,
+		Headers:     data.Headers,
 	}
 	return
 }
@@ -168,6 +178,11 @@ func (this *RequestMaker) NewRequest() (request *http.Request, err error) {
 	}
 
 	request.Header.Set("Content-Type", this.ContentType)
+
+	for _, header := range this.Headers {
+		request.Header.Set(http.CanonicalHeaderKey(header.Key), header.Value)
+	}
+
 	return
 }
 
