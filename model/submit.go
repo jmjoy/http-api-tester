@@ -40,6 +40,11 @@ func (this *submitModel) Submit(data Data) (resp Response, err error) {
 		return
 	}
 
+	// save to history
+	if err = HistoryModel.Insert(data); err != nil {
+		return
+	}
+
 	return response, nil
 }
 

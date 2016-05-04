@@ -233,7 +233,7 @@
                 <h4 class="modal-title">历史记录</h4>
             </div>
             <div class="modal-body">
-                <table id="history_table" class="table table-striped table-condensed table-hover">
+                <table id="history_table" class="table table-striped  table-hover">
                 </table>
             </div>
             <div class="modal-footer">
@@ -331,8 +331,9 @@
     <script id="history_tpl" type="text/x-handlebars-template">
         {{#each History}}
         <tr>
-            <td width="90%"></td>
-            <td width="10%"></td>
+            <td>{{math @index "+" 1}}</td>
+            <td>{{Method}} {{Url}}</td>
+            <td><button onclick="historyModel.use({{@index}})">使用</button></td>
         </tr>
         {{/each}}
     </script>

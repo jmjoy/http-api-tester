@@ -12,4 +12,5 @@ var Routers = map[string]func() app.IController{
 	"/static/":     func() app.IController { return new(controller.StaticController) },
 	"/bookmark":    func() app.IController { return new(controller.BookmarkController) },
 	"/bookmarks":   func() app.IController { return new(controller.BookmarksController) },
+	"/history":     func() app.IController { return new(controller.HistoryController) },
 }

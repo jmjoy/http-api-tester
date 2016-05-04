@@ -2,14 +2,16 @@ var configs = {
     "indexUrl":     "/",
     "initDataUrl":  "/?act=initData",
     "bookmarkUrl":  "/bookmark",
-    "bookmarksUrl": "/bookmarks"
+    "bookmarksUrl": "/bookmarks",
+    "historyUrl":  "/history"
 };
 
 // TODO Move all global variables to this global object
 var global = {
     "environ": "dev",
     "plugins": {},
-    "currentEnctype": "x_www"
+    "currentEnctype": "x_www",
+    "currentHistory": []
 };
 
 var utils = {
@@ -46,7 +48,9 @@ var templates = {
     "pluginPanel":     utils.tplCompile("plugin_panel_tpl"),
     "bookmarkOptions": utils.tplCompile("bookmark_option_tpl"),
     "result":          utils.tplCompile("result_tpl"),
-    "headersOptions":  utils.tplCompile("headers_tpl")
+    "headersOptions":  utils.tplCompile("headers_tpl"),
+    "history":         utils.tplCompile("history_tpl")
+
 };
 
 var page = {
@@ -62,6 +66,25 @@ var page = {
         // hotkeys
         $(document).bind('keydown', 'Ctrl+return', function() {
             $("#submit_btn").click();
+        });
+
+        // history
+        $('#history_modal').on('show.bs.modal', function (e) {
+            $("#history_table").html(""); // 先清空
+            utils.ajax(configs.historyUrl, "GET", {}, function(respData) {
+                console.log("history data:", respData);
+                if (respData.Status != 200) {
+                    return page.message(respData.Message);
+                }
+
+                // 成功
+                respData.Data.reverse();
+                global.currentHistory = respData.Data;
+                page.renderHistory(respData.Data);
+
+            }, function(textStatus) {
+                return page.message(textStatus);
+            });
         });
     },
 
@@ -137,6 +160,11 @@ var page = {
             return $("#headers_body").html(html);
         }
         return $("#headers_body").append(html);
+    },
+
+    "renderHistory": function(history) {
+        var html = templates.history({"History": history});
+        return $("#history_table").html(html);
     },
 
     "renderResult": function(result) {
@@ -488,12 +516,21 @@ var bookmarks = {
 
 };
 
+var historyModel = {
+    "use": function(index) {
+        console.log(index);
+        page.renderData(global.currentHistory[index]);
+        $('#history_modal').modal('hide');
+    }
+};
+
 // window.onload
 $(function() {
     // init libaray
     if (global.environ != "dev") {
         console.log = function() {};
     }
+
     Handlebars.registerHelper('eq', function(v1, v2, options) {
         if(v1 == v2) {
             return options.fn(this);
@@ -506,6 +543,19 @@ $(function() {
             return options.fn(this);
         }
         return options.inverse(this);
+    });
+
+    Handlebars.registerHelper("math", function(lvalue, operator, rvalue, options) {
+        lvalue = parseFloat(lvalue);
+        rvalue = parseFloat(rvalue);
+
+        return {
+            "+": lvalue + rvalue,
+            "-": lvalue - rvalue,
+            "*": lvalue * rvalue,
+            "/": lvalue / rvalue,
+            "%": lvalue % rvalue
+        }[operator];
     });
 
     // init components
