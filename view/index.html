@@ -29,6 +29,8 @@
 
             <ul class="nav navbar-nav navbar-left">
                 <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试 (Ctrl+Enter)</button></li>
+
+                <li><button type="button" id="history_btn" class="btn btn-sm btn-default navbar-btn" data-toggle="modal" data-target="#history_modal"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> 历史记录</button></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -223,6 +225,23 @@
         </div>
     </div>
 
+    <div id="history_modal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">历史记录</h4>
+            </div>
+            <div class="modal-body">
+                <table id="history_table" class="table table-striped table-condensed table-hover">
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
 
     <!-- 模板 -->
     <script id="args_tpl" type="text/x-handlebars-template">
@@ -307,6 +326,15 @@
         {{#if Bm}}
         <pre id="result_bm_panel">压测： {{Bm}}</pre>
         {{/if}}
+    </script>
+
+    <script id="history_tpl" type="text/x-handlebars-template">
+        {{#each History}}
+        <tr>
+            <td width="90%"></td>
+            <td width="10%"></td>
+        </tr>
+        {{/each}}
     </script>
 
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
