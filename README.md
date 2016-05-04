@@ -24,7 +24,7 @@ Just one file ~! (Since v0.5)
 ### Install
 
     bower install
-    make create-view
+    sh create-view.sh
     go build
 
 ## TODO
