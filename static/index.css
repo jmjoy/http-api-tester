@@ -87,3 +87,8 @@ td {
     height: 41px;
     line-height: 41px;
 }
+
+#title-headers {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}

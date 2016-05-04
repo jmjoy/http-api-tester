@@ -45,7 +45,8 @@ var templates = {
     "pluginOptions":   utils.tplCompile("plugin_option_tpl"),
     "pluginPanel":     utils.tplCompile("plugin_panel_tpl"),
     "bookmarkOptions": utils.tplCompile("bookmark_option_tpl"),
-    "result":          utils.tplCompile("result_tpl")
+    "result":          utils.tplCompile("result_tpl"),
+    "headersOptions":  utils.tplCompile("headers_tpl")
 };
 
 var page = {
@@ -77,7 +78,10 @@ var page = {
         // plugin
         this.renderPlugin(data.Plugin);
 
-        // enctype TODO
+        // enctype
+        $("#enctype_json_content").val(data.JsonContent);
+        $("#enctype_plain_content").val(data.PlainContent);
+        $("a[href='#enctype_"+data.Enctype+"']").click();
     },
 
     "renderBookmarks": function(bookmarks, bookmarkName) {
@@ -171,6 +175,21 @@ var args = {
             "Key":    "",
             "Value":  "",
             "Method": "GET"
+        }], false);
+
+        page.refresh();
+    },
+
+    "remove": function (btn) {
+        $(btn).parent().parent().remove();
+    }
+};
+
+var headers = {
+    "add": function() {
+        page.renderHeaders([{
+            "Key":    "",
+            "Value":  ""
         }], false);
 
         page.refresh();

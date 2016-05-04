@@ -103,10 +103,10 @@ type Response struct {
 }
 
 type RequestMaker struct {
-	Method  string
-	Url     *url.URL
-	Enctype string
-	Body    string
+	Method      string
+	Url         *url.URL
+	ContentType string
+	Body        string
 }
 
 func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
@@ -115,25 +115,44 @@ func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
 		return
 	}
 
-	querys := u.Query()
-	forms := make(url.Values)
+	var contentType string
+	var body string
 
-	for _, arg := range data.Args {
-		switch arg.Method {
-		case "GET":
-			querys.Add(arg.Key, arg.Value)
+	switch data.Enctype {
+	case "x_www":
+		contentType = "application/x-www-form-urlencoded"
 
-		case "POST":
-			forms.Add(arg.Key, arg.Value)
+		querys := u.Query()
+		forms := make(url.Values)
+
+		for _, arg := range data.Args {
+			switch arg.Method {
+			case "GET":
+				querys.Add(arg.Key, arg.Value)
+
+			case "POST":
+				forms.Add(arg.Key, arg.Value)
+			}
 		}
+
+		u.RawQuery = querys.Encode()
+
+		body = forms.Encode()
+
+	case "json":
+		contentType = "text/json"
+		body = data.JsonContent
+
+	case "plain":
+		contentType = "text/plain"
+		body = data.PlainContent
 	}
 
-	u.RawQuery = querys.Encode()
-
 	reqMaker = &RequestMaker{
-		Method:   data.Method,
-		Url:      u,
-		PostForm: forms,
+		Method:      data.Method,
+		Url:         u,
+		ContentType: contentType,
+		Body:        body,
 	}
 	return
 }
@@ -142,13 +161,13 @@ func (this *RequestMaker) NewRequest() (request *http.Request, err error) {
 	request, err = http.NewRequest(
 		this.Method,
 		this.Url.String(),
-		strings.NewReader(this.PostForm.Encode()),
+		strings.NewReader(this.Body),
 	)
 	if err != nil {
 		return
 	}
 
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Content-Type", this.ContentType)
 	return
 }
 

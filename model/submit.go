@@ -61,7 +61,7 @@ func (this *submitModel) submitTest(data Data, reqMaker *RequestMaker, response 
 	}
 
 	response.ReqUrl = req.URL.String()
-	response.ReqBody = reqMaker.PostForm.Encode()
+	response.ReqBody = reqMaker.Body
 	response.Status = resp.Status
 	response.Test = string(respBodyBuf)
 
@@ -89,7 +89,7 @@ func (this *submitModel) submitBenckmark(data Data, bm Bm, reqMaker *RequestMake
 
 	result := (&boomer.Boomer{
 		Request:     req,
-		RequestBody: reqMaker.PostForm.Encode(),
+		RequestBody: reqMaker.Body,
 		N:           int(n),
 		C:           int(c),
 		Timeout:     35,

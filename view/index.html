@@ -113,8 +113,18 @@
                 </div>
             </div>
 
-
-
+            <div class="panel panel-default">
+                <div id="title-headers" class="panel-heading">Headers:</div>
+                <table class="table table-bordered table-condensed">
+                    <thead>
+                        <th>http-equiv:</th>
+                        <th>content:</th>
+                        <th width="10%"><button type="button" class="btn btn-sm btn-block btn-info" onclick="headers.add()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></th>
+                    </thead>
+                    <tbody id="headers_body">
+                    </tbody>
+                </table>
+            </div>
 
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -229,6 +239,22 @@
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-block btn-danger" onclick="args.remove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+    <script id="headers_tpl" type="text/x-handlebars-template">
+        {{#each Headers}}
+        <tr>
+            <td>
+                <input type="text" class="form-control arg-key" value="{{Key}}" />
+            </td>
+            <td>
+                <input type="text" class="form-control arg-value" value="{{Value}}" />
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-block btn-danger" onclick="headers.remove(this)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
             </td>
         </tr>
         {{/each}}
