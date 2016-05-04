@@ -33,6 +33,7 @@ Just one file ~! (Since v0.5)
 - [ ] Support more request body format
 - [x] Adjust config file
 - [ ] Support history list
+- [ ] Support move header
 
 ## License
 
