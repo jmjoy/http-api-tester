@@ -4,7 +4,7 @@ HTTP接口测试工具
 
 ## Shortcut
 
-![shortcut](https://raw.githubusercontent.com/jmjoy/http-interface-tester/master/shortcut.jpg)
+![shortcut](https://raw.githubusercontent.com/jmjoy/http-api-tester/master/img/shortcut0.6.bmp)
 
 ## Download
 
@@ -39,10 +39,10 @@ Just one file ~! (Since v0.5)
 ## TODO
 
 - [x] Support all http request method
-- [ ] Support more request body format
+- [x] Support more request body format
 - [x] Adjust config file
-- [ ] Support history list
-- [ ] Support move header
+- [x] Support history list
+- [x] Support move header
 
 ## License
 
