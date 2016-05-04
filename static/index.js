@@ -265,6 +265,7 @@ var bookmarks = {
             }
 
             page.renderData(data.Data);
+            return page.refresh();
 
         }, function(textStatus) {
             $(btn).button('reset'); // 恢复按钮状态
