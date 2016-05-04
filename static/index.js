@@ -50,7 +50,10 @@ var templates = {
 var page = {
     "renderData": function(data) {
         // url
-        $('#method').bootstrapSwitch('state', data.Method=="GET");
+        // $('#method').bootstrapSwitch('state', data.Method=="GET");
+        $("#method").selectpicker();
+        $("#method").selectpicker('val', data.Method);
+
         $('#url').val(data.Url);
 
         // args
@@ -171,7 +174,8 @@ var dataProvider = {
         var data = {};
 
         // 获取数据
-        data.Method = $("#method").bootstrapSwitch("state") ? "GET" : "POST";
+        // data.Method = $("#method").bootstrapSwitch("state") ? "GET" : "POST";
+        data.Method = $("#method").selectpicker('val');
         data.Url = $.trim($("#url").val());
         data.Bm = {};
         data.Bm.Switch = $("#bm_switch").bootstrapSwitch("state");

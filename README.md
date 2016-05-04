@@ -26,7 +26,16 @@ Just one file ~! (Since v0.5)
     bower install
     sh create-view.sh
     go build
+    
+## Usage
 
+    → ./http-api-tester --help
+    Usage of ./http-api-tester:
+      -db string
+          数据库路径 (default "http-api-tester.db")
+      -p string
+          服务器运行端口 (default "8080")
+    
 ## TODO
 
 - [ ] Support all http request method

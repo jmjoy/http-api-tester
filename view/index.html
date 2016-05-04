@@ -55,7 +55,18 @@
                     <form class="form-inline" onsubmit="return false;">
                         <div class="form-group">
                             <label>请求方式：</label>
-                            <input type="checkbox" class="switch" id="method" data-on-color="success" data-off-color="info" data-on-text="GET" data-off-text="POST" data-size="mini" />
+
+                            <select class="selectpicker show-tick" id="method" data-width="fit">
+                                <option value="GET"     style="background: #5cb85c; color: #fff;">GET</option>
+                                <option value="POST"    style="background: #337ab7; color: #fff;">POST</option>
+                                <option value="PUT"     style="background: #f0ad4e; color: #fff;">PUT</option>
+                                <option value="DELETE"  style="background: #d9534f; color: #fff;">DELETE</option>
+                                <option value="PATCH"   style="background: #adff2f; color: #fff;">PATCH</option>
+                                <option value="OPTIONS" style="background: #5bc0de; color: #fff;">OPTIONS</option>
+                                <option value="HEAD"    style="background: #fba7db; color: #fff;">HEAD</option>
+                                <option value="TRACE"   style="background: #7f7f7f; color: #fff;">TRACE</option>
+                                <option value="CONNECT" style="background: #40bfbf; color: #fff;">CONNECT</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
