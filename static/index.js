@@ -64,7 +64,7 @@ var page = {
         $('#enctype a:first').tab('show');
 
         // hotkeys
-        $(document).bind('keydown.esc', function(event) {
+        $(document).bind('keydown', 'esc', function(event) {
             event.preventDefault();
             console.log('press hotkey');
             $("#submit_btn").click();
