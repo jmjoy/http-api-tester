@@ -28,7 +28,7 @@
             <a class="navbar-brand" href="#">接口测试工具</a>
 
             <ul class="nav navbar-nav navbar-left">
-                <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试 (Ctrl+Enter)</button></li>
+                <li><button type="button" id="submit_btn" class="btn btn-sm btn-default navbar-btn" data-loading-text="please wait..."><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 执行测试 (Esc)</button></li>
 
                 <li><button type="button" id="history_btn" class="btn btn-sm btn-default navbar-btn" data-toggle="modal" data-target="#history_modal"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> 历史记录</button></li>
             </ul>
@@ -116,8 +116,8 @@
             </div>
 
             <div class="panel panel-default">
-                <div id="title-headers" class="panel-heading"><strong> Headers: </strong></div>
-                <table class="table table-bordered table-condensed" align="left">
+                <div class="title-headers panel-heading"><strong> Headers: </strong></div>
+                <table class="table table-bordered table-condensed">
                     <thead>
                         <th>http-equiv:</th>
                         <th>content:</th>
@@ -232,9 +232,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">历史记录</h4>
             </div>
-            <div class="modal-body">
-                <table id="history_table" class="table table-striped table-condensed table-hover">
-                </table>
+            <div class="modal-body" id="history_panel">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -329,13 +327,15 @@
     </script>
 
     <script id="history_tpl" type="text/x-handlebars-template">
+        <table class="table table-striped table-condensed table-hover">
         {{#each History}}
-        <tr class="well">
+        <tr>
             <td class="text-left"><strong>{{math @index "+" 1}}</strong></td>
             <td class="text-left">{{Method}} {{Url}}</td>
-            <td class="text-left"><button class="btn btn-sm btn-default" onclick="historyModel.use({{@index}})">使用</button></td>
+            <td class="text-left"><button class="btn btn-sm btn-link" onclick="historyModel.use({{@index}})">使用</button></td>
         </tr>
         {{/each}}
+        </table>
     </script>
 
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>

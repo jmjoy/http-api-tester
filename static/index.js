@@ -64,13 +64,15 @@ var page = {
         $('#enctype a:first').tab('show');
 
         // hotkeys
-        $(document).bind('keydown', 'Ctrl+return', function() {
+        $(document).bind('keydown', 'esc', function(event) {
+            event.preventDefault();
+            console.log('press hotkey');
             $("#submit_btn").click();
         });
 
         // history
         $('#history_modal').on('show.bs.modal', function (e) {
-            $("#history_table").html(""); // 先清空
+            $("#history_panel").html(""); // 先清空
             utils.ajax(configs.historyUrl, "GET", {}, function(respData) {
                 console.log("history data:", respData);
                 if (respData.Status != 200) {
@@ -164,7 +166,7 @@ var page = {
 
     "renderHistory": function(history) {
         var html = templates.history({"History": history});
-        return $("#history_table").html(html);
+        return $("#history_panel").html(html);
     },
 
     "renderResult": function(result) {
@@ -521,6 +523,7 @@ var historyModel = {
         console.log(index);
         page.renderData(global.currentHistory[index]);
         $('#history_modal').modal('hide');
+        page.refresh();
     }
 };
 

@@ -17,4 +17,6 @@ var (
 	ErrUrlUnknowScheme    = app.NewApiStatusError(2001, "URL未知协议：%s")
 	ErrUrlEmptyHost       = app.NewApiStatusError(2002, "URL的Host不能为空")
 	ErrUrlUnknowArgMethod = app.NewApiStatusError(2003, "URL的参数中包含未知请求方式：%s")
+
+	ErrJsonCompact = app.NewApiStatusError(3000, "JSON格式出错：%s")
 )

@@ -7,6 +7,9 @@ import (
 
 	"strings"
 
+	"bytes"
+	"encoding/json"
+
 	"github.com/jmjoy/http-api-tester/errors"
 )
 
@@ -150,7 +153,19 @@ func NewRequestMaker(data Data) (reqMaker *RequestMaker, err error) {
 
 	case "json":
 		contentType = "text/json"
-		body = data.JsonContent
+
+		content := strings.TrimSpace(data.JsonContent)
+		if len(content) == 0 {
+			break
+		}
+
+		buffer := new(bytes.Buffer)
+		err = json.Compact(buffer, []byte(content))
+		if err != nil {
+			err = errors.ErrJsonCompact.NewMessageSpf(err)
+			return
+		}
+		body = buffer.String()
 
 	case "plain":
 		contentType = "text/plain"
