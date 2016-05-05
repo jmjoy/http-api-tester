@@ -8,7 +8,7 @@ var configs = {
 
 // TODO Move all global variables to this global object
 var global = {
-    "environ": "prod",
+    "environ": "dev",
     "plugins": {},
     "currentEnctype": "x_www",
     "currentHistory": []

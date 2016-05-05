@@ -8,6 +8,7 @@ file2string -pkg text -o text/text.go -var Text \
 	static/bower_components/handlebars/handlebars.min.js \
 	static/bower_components/jquery/dist/jquery.min.js \
 	static/bower_components/jquery/dist/jquery.min.map \
+	static/bower_components/jquery.hotkeys/jquery.hotkeys.js \
 	static/*.* \
 	view/* \
 	favicon.ico
