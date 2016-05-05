@@ -13,7 +13,7 @@ const (
 	NAME    = "http-api-tester"
 	VERSION = "0.5"
 
-	IS_DEBUG = true
+	IS_DEBUG = false
 )
 
 var (
